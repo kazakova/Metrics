@@ -327,8 +327,8 @@ def main():
     pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens)')
-    pars.add_argumant('--fold-change', default = 2, help = 'fold_change threshold for static method')
-    pars.add_argumant('--alpha', default = 0.01, help = 'fdr_BH threshold for static method')
+    pars.add_argument('--fold-change', default = 2, help = 'fold_change threshold for static method')
+    pars.add_argument('--alpha', default = 0.01, help = 'fdr_BH threshold for static method')
     args = pars.parse_args()
     
     #################
