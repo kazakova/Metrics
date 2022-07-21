@@ -359,6 +359,15 @@ def main():
     ################# Stat testing
         quant_res = stat_test(dfs, 0.01)
 
+    ################# Volcano plot
+        volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
+
+    ################# DE proteins selection
+        genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
+        if genes.shape[0] == 0:
+            print('0 proteins meet the requirements')
+            continue
+        
     ################# Metrics 
         if args.regulation == 'all':
             pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation, 
@@ -368,12 +377,6 @@ def main():
             e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
                                         fold_change = args.fold_change, alpha = args.alpha)
             print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
-
-    ################# Volcano plot
-        volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
-
-    ################# DE proteins selection
-        genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
 
     ################# GO
         filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
