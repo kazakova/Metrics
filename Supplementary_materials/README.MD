@@ -1,8 +1,8 @@
 **Supplemetary tables**
 
-TabS1a. Results of statistical analysis of IFN-induced proteome changes: imputation with minimal NSAF  [DOI: 10.1021/pr060161n].
+Table_S1a. Results of statistical analysis of IFN-induced proteome changes: imputation with minimal NSAF  [DOI: 10.1021/pr060161n].
 
-TabS1b. Results of statistical analysis of IFN-induced proteome changes: imputation with k-nearest neighbors machine learning.
+Table_S1b. Results of statistical analysis of IFN-induced proteome changes: imputation with k-nearest neighbors machine learning.
 
 Table_S2. Summary of virus assay-based and proteomics scores calculated for ranking the functionality of IFN-dependent antiviral
   mechanisms in cancer and normal cells. Table S2 contains descriptions of proteomic datasets used in this study. 
