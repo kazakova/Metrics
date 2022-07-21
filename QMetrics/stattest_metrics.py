@@ -8,8 +8,9 @@ from scipy.stats import mannwhitneyu
 from scipy.stats import ttest_ind
 
 import matplotlib.pyplot as plt
+plt.rc('axes', axisbelow=True)
 import seaborn as sns
-sns.set(rc={'figure.facecolor':'white', 'axes.axisbelow':True})
+sns.set(rc={'figure.facecolor':'white'})
 sns.set(style = 'whitegrid')
 
 from sklearn.impute import KNNImputer
