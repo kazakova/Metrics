@@ -10,7 +10,7 @@ setup(
 #    long_description_content_type="text/markdown",
     author               = 'Elizaveta Kazakova',
     author_email         = 'kazakova.em@phystech.edu',
-    install_requires     = ['numpy', 'pandas', 'statsmodels', 'scipy', 'matplotlib', 'seaborn', 'scikit-learn'],
+    install_requires     = ['numpy', 'pandas', 'statsmodels', 'scipy', 'matplotlib', 'seaborn', 'scikit-learn', 'requests'],
     classifiers          = ['Intended Audience :: Science/Research',
                             'Programming Language :: Python :: 3',
                             'Topic :: Scientific/Engineering :: Bio-Informatics',
