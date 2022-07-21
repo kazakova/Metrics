@@ -21,7 +21,6 @@ import urllib.error
 
 import requests
 from PIL import Image
-from StringIO import StringIO
 import io
 import argparse
 
@@ -285,7 +284,7 @@ def show_string_picture(genes, filename, species):
     }
     try:
         res = requests.post(request_url, params)
-        img = Image.open(StringIO(res.content))
+        img = Image.open(io.BytesIO(res.content))
         plt.figure(dpi = 600)
         imgplot = imshow(img)
         plt.savefig(filename, bbox_inches='tight')
