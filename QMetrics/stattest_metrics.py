@@ -326,9 +326,9 @@ def main():
     pars.add_argument('--imputation', choices = ['kNN', 'MinDet'], help = 'Missing value imputation method.')
     pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
-    pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens)')
-    pars.add_argument('--fold-change', type = float, default = 2, help = 'fold_change threshold for static method')
-    pars.add_argument('--alpha', type = float, default = 0.01, help = 'fdr_BH threshold for static method')
+    pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
+    pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
+    pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     args = pars.parse_args()
     
     #################
