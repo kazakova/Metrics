@@ -137,47 +137,46 @@ def stat_test(dfs, alpha):
     res['log2(fold_change)'] = dfs[0].mean(axis = 1) - dfs[1].mean(axis = 1)
     return res[['-log10(fdr_BH)', 'log2(fold_change)', 'Gene']]
 
-def metrics(df, method, reg_type,
-            fold_change = 2, alpha = 0.01):
+def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
-        df = df[['log2(fold_change)', '-log10(fdr_BH)']]
+    df = df[['log2(fold_change)', '-log10(fdr_BH)']]
 
-        if method == 'static':
-            fdr_th = -np.log10(alpha)
-            up_fold = np.log2(fold_change)
-            down_fold = np.log2(1/fold_change)
+    if method == 'static':
+        fdr_th = -np.log10(alpha)
+        up_fold = np.log2(fold_change)
+        down_fold = np.log2(1/fold_change)
 
-        elif method == 'semi-dynamic':
-            fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
-            up_fold = np.log2(fold_change)
-            down_fold = np.log2(1/fold_change)
+    elif method == 'semi-dynamic':
+        fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
+        up_fold = np.log2(fold_change)
+        down_fold = np.log2(1/fold_change)
 
-        else:  
-            fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
-            up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
-            down_fold = np.quantile(df['log2(fold_change)'], 0.25) - 1.5*iqr(df['log2(fold_change)'])
-            
-        if reg_type == 'all':
-            de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & ((df['log2(fold_change)'] < down_fold)|(df['log2(fold_change)'] >= up_fold))]
-            tmp = [np.abs(de_df.loc[i, 'log2(fold_change)'] * de_df.loc[i, '-log10(fdr_BH)']) for i in de_df.index]
-            pi1 = np.sum(tmp)
-            pi2 = np.prod(tmp)
-            return pi1, pi2
-        else:
-            if reg_type == 'UP':
-                de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] >= up_fold)]
-                fc_th = up_fold
-            elif reg_type == 'DOWN':
-                de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] < down_fold)]
-                fc_th = down_fold
-            mean_fc = de_df['log2(fold_change)'].mean()
-            mean_fdr = de_df['-log10(fdr_BH)'].mean()
-            e_dist = np.sqrt(mean_fc**2 + mean_fdr**2)
-            e_dist_mod = np.sqrt((mean_fc - fc_th)**2 + (mean_fdr - fdr_th)**2)
-            tmp = [np.abs(de_df.loc[i, 'log2(fold_change)'] * de_df.loc[i, '-log10(fdr_BH)']) for i in de_df.index]
-            pi1 = np.sum(tmp)
-            pi2 =np.log10(np.prod(tmp))
-            return e_dist, e_dist_mod, pi1, pi2
+    else:  
+        fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
+        up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
+        down_fold = np.quantile(df['log2(fold_change)'], 0.25) - 1.5*iqr(df['log2(fold_change)'])
+
+    if reg_type == 'all':
+        de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & ((df['log2(fold_change)'] < down_fold)|(df['log2(fold_change)'] >= up_fold))]
+        tmp = [np.abs(de_df.loc[i, 'log2(fold_change)'] * de_df.loc[i, '-log10(fdr_BH)']) for i in de_df.index]
+        pi1 = np.sum(tmp)
+        pi2 = np.prod(tmp)
+        return pi1, pi2
+    else:
+        if reg_type == 'UP':
+            de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] >= up_fold)]
+            fc_th = up_fold
+        elif reg_type == 'DOWN':
+            de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] < down_fold)]
+            fc_th = down_fold
+        mean_fc = de_df['log2(fold_change)'].mean()
+        mean_fdr = de_df['-log10(fdr_BH)'].mean()
+        e_dist = np.sqrt(mean_fc**2 + mean_fdr**2)
+        e_dist_mod = np.sqrt((mean_fc - fc_th)**2 + (mean_fdr - fdr_th)**2)
+        tmp = [np.abs(de_df.loc[i, 'log2(fold_change)'] * de_df.loc[i, '-log10(fdr_BH)']) for i in de_df.index]
+        pi1 = np.sum(tmp)
+        pi2 =np.log10(np.prod(tmp))
+        return e_dist, e_dist_mod, pi1, pi2
 
 
 def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):   
@@ -275,22 +274,20 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
     return res[['fold_change', '-log10(fdr_BH)', 'Gene']]
 
 def show_string_picture(genes, filename, species):
+    string_api_url = "https://string-db.org/api/"
     output_format = "image"
     method = "network"
-    species = species
-    request_url = "https://string-db.org/api" + "/" + output_format + "/" + method + "?"
-    request_url += "species=" + species
-    request_url += "&identifiers={}"
-    request_url = request_url.format("%0d".join(genes))
+    request_url = string_api_url + output_format + "/" + method
+    params = {
+    "identifiers" : "%0d".join(genes), # your protein
+    "species" : species, # species NCBI identifier 
+    }
     try:
-        urllib.request.urlretrieve(request_url, filename="string.png")
+        res = requests.post(request_url, params)
+        with open(filename, 'wb') as fh:
+        fh.write(res.content)
     except urllib.error.HTTPError as exception:
         print(exception)
-    img = imread('string.png')
-    plt.figure(dpi = 600)
-    imgplot = imshow(img)
-    plt.savefig(filename, bbox_inches='tight')
-    plt.close()
         
 def load_go_enrichment(genes,species):
     string_api_url = "https://string-db.org/api/"
