@@ -9,7 +9,7 @@ from scipy.stats import ttest_ind
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set(rc={'figure.facecolor':'white'})
+sns.set(rc={'figure.facecolor':'white', 'axes.axisbelow':True})
 sns.set(style = 'whitegrid')
 
 from sklearn.impute import KNNImputer
@@ -21,6 +21,7 @@ import urllib.request
 import urllib.error
 
 import requests
+from PIL import Image
 import io
 import argparse
 
@@ -282,15 +283,21 @@ def show_string_picture(genes, filename, species):
     "identifiers" : "%0d".join(genes), # your protein
     "species" : species, # species NCBI identifier 
     }
+    
     try:
-        res = requests.post(request_url, params)
-        with open(filename, 'wb') as fh:
-            fh.write(res.content)
-        img = imread(filename)
-        plt.figure(dpi = 600)
+        res = requests.get(request_url, params)
+        image_bytes = io.BytesIO(res.content)
+        img = Image.open(image_bytes)
         imgplot = imshow(img)
         plt.savefig(filename, bbox_inches='tight')
         plt.close()
+#         with open(filename, 'wb') as fh:
+#             fh.write(res.content)
+#         img = imread(filename)
+#         plt.figure(dpi = 600)
+#         imgplot = imshow(img)
+#         plt.savefig(filename, bbox_inches='tight')
+#         plt.close()
     except urllib.error.HTTPError as exception:
         print(exception)
         
