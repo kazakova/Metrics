@@ -285,7 +285,7 @@ def show_string_picture(genes, filename, species):
     try:
         res = requests.post(request_url, params)
         with open(filename, 'wb') as fh:
-            fh.write(response.content)
+            fh.write(res.content)
         img = imread(filename)
         plt.figure(dpi = 600)
         imgplot = imshow(img)
