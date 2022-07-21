@@ -18,5 +18,5 @@ setup(
                             'Topic :: Scientific/Engineering :: Physics'],
     license              = 'License :: OSI Approved :: Apache Software License',
     packages             = find_packages(),
-    entry_points         = {'console_scripts': ['QMetrics=stattest_metrics:main']},
+    entry_points         = {'console_scripts': ['QMetrics=QMetrics.stattest_metrics:main']},
     )
