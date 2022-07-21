@@ -327,6 +327,8 @@ def main():
     pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens)')
+    pars.add_argumant('--fold-change', default = 2, help = 'fold_change threshold for static method')
+    pars.add_argumant('--alpha', default = 0.01, help = 'fdr_BH threshold for static method')
     args = pars.parse_args()
     
     #################
@@ -359,17 +361,19 @@ def main():
 
     ################# Metrics 
         if args.regulation == 'all':
-            pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation)
+            pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation, 
+                               fold_change = args.fold_change, alpha = args.alpha)
             print('pi1 = {}\npi2 = {}'.format(pi1, pi2))
         else:
-            e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation)
+            e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
+                                        fold_change = args.fold_change, alpha = args.alpha)
             print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
 
     ################# Volcano plot
-        volcano(quant_res, args.output_dir, args.thresholds, sample_type)
+        volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
 
     ################# DE proteins selection
-        genes = de_gene_list(quant_res, args.thresholds, args.regulation)
+        genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
 
     ################# GO
         filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
