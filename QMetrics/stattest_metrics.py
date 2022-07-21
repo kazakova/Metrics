@@ -288,6 +288,7 @@ def show_string_picture(genes, filename, species):
         res = requests.get(request_url, params)
         image_bytes = io.BytesIO(res.content)
         img = Image.open(image_bytes)
+        plt.figure(dpi = 600)
         imgplot = imshow(img)
         plt.savefig(filename, bbox_inches='tight')
         plt.close()
