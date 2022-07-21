@@ -285,7 +285,7 @@ def show_string_picture(genes, filename, species):
     try:
         res = requests.post(request_url, params)
         with open(filename, 'wb') as fh:
-        fh.write(res.content)
+            fh.write(res.content)
     except urllib.error.HTTPError as exception:
         print(exception)
         
