@@ -8,7 +8,6 @@ from scipy.stats import mannwhitneyu
 from scipy.stats import ttest_ind
 
 import matplotlib.pyplot as plt
-plt.rc('axes', axisbelow=True)
 import seaborn as sns
 sns.set(rc={'figure.facecolor':'white'})
 sns.set(style = 'whitegrid')
@@ -18,8 +17,8 @@ from sklearn.impute import KNNImputer
 from scipy.stats import iqr
 
 from matplotlib.pyplot import imread, imshow
-import urllib.request
 import urllib.error
+import urllib.request
 
 import requests
 from PIL import Image
@@ -279,29 +278,20 @@ def show_string_picture(genes, filename, species):
     string_api_url = "https://string-db.org/api/"
     output_format = "image"
     method = "network"
-    request_url = string_api_url + output_format + "/" + method
-    params = {
-    "identifiers" : "%0d".join(genes), # your protein
-    "species" : species, # species NCBI identifier 
-    }
-    
+    species = species
+    request_url = "https://string-db.org/api" + "/" + output_format + "/" + method + "?"
+    request_url += "species=" + species
+    request_url += "&identifiers={}"
+    request_url = request_url.format("%0d".join(genes))
     try:
-        res = requests.get(request_url, params)
-        image_bytes = io.BytesIO(res.content)
-        img = Image.open(image_bytes)
-        plt.figure(dpi = 600)
-        imgplot = imshow(img)
-        plt.savefig(filename, bbox_inches='tight')
-        plt.close()
-#         with open(filename, 'wb') as fh:
-#             fh.write(res.content)
-#         img = imread(filename)
-#         plt.figure(dpi = 600)
-#         imgplot = imshow(img)
-#         plt.savefig(filename, bbox_inches='tight')
-#         plt.close()
+        urllib.request.urlretrieve(request_url, filename="string.png")
     except urllib.error.HTTPError as exception:
         print(exception)
+    img = imread('string.png')
+    plt.figure(dpi = 600)
+    imgplot = imshow(img)
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close()
         
 def load_go_enrichment(genes,species):
     string_api_url = "https://string-db.org/api/"
