@@ -284,8 +284,11 @@ def show_string_picture(genes, filename, species):
     }
     try:
         res = requests.post(request_url, params)
-        with open(filename, 'wb') as fh:
-            fh.write(res.content)
+        img = imread(res.content)
+        plt.figure(dpi = 600)
+        imgplot = imshow(img)
+        plt.savefig(filename, bbox_inches='tight')
+        plt.close()
     except urllib.error.HTTPError as exception:
         print(exception)
         
