@@ -365,7 +365,7 @@ def main():
     ################# DE proteins selection
         genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
         if genes.shape[0] == 0:
-            print('0 proteins meet the requirements')
+            print('0 proteins meet the requirements\n')
             continue
         
     ################# Metrics 
