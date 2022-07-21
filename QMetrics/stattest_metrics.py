@@ -360,7 +360,7 @@ def main():
     ################# Metrics 
         if args.regulation == 'all':
             pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation)
-            print('pi1 = {}\npi2 = {}'.format(pi1, p2))
+            print('pi1 = {}\npi2 = {}'.format(pi1, pi2))
         else:
             e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation)
             print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
