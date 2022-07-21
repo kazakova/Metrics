@@ -316,7 +316,7 @@ def enrichment_calculation(genes, d):
 
     return d
         
-if __name__ == '__main__':
+def main():
     ################# params
     pars = argparse.ArgumentParser()
     pars.add_argument('--sample-file', help = 'Path to sample file.')
