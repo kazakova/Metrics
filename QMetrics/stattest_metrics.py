@@ -18,10 +18,10 @@ from scipy.stats import iqr
 
 from matplotlib.pyplot import imread, imshow
 import urllib.error
-import urllib.request
 
 import requests
 from PIL import Image
+from StringIO import StringIO
 import io
 import argparse
 
@@ -278,20 +278,20 @@ def show_string_picture(genes, filename, species):
     string_api_url = "https://string-db.org/api/"
     output_format = "image"
     method = "network"
-    species = species
-    request_url = "https://string-db.org/api" + "/" + output_format + "/" + method + "?"
-    request_url += "species=" + species
-    request_url += "&identifiers={}"
-    request_url = request_url.format("%0d".join(genes))
+    request_url = string_api_url + output_format + "/" + method
+    params = {
+    "identifiers" : "%0d".join(genes), # your protein
+    "species" : species, # species NCBI identifier 
+    }
     try:
-        urllib.request.urlretrieve(request_url, filename="string.png")
+        res = requests.post(request_url, params)
+        img = Image.open(StringIO(res.content))
+        plt.figure(dpi = 600)
+        imgplot = imshow(img)
+        plt.savefig(filename, bbox_inches='tight')
+        plt.close()
     except urllib.error.HTTPError as exception:
         print(exception)
-    img = imread('string.png')
-    plt.figure(dpi = 600)
-    imgplot = imshow(img)
-    plt.savefig(filename, bbox_inches='tight')
-    plt.close()
         
 def load_go_enrichment(genes,species):
     string_api_url = "https://string-db.org/api/"
