@@ -160,7 +160,7 @@ def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
         de_df = df[(df['-log10(fdr_BH)'] > fdr_th) & ((df['log2(fold_change)'] < down_fold)|(df['log2(fold_change)'] >= up_fold))]
         tmp = [np.abs(de_df.loc[i, 'log2(fold_change)'] * de_df.loc[i, '-log10(fdr_BH)']) for i in de_df.index]
         pi1 = np.sum(tmp)
-        pi2 = np.prod(tmp)
+        pi2 = np.log10(np.prod(tmp))
         return pi1, pi2
     else:
         if reg_type == 'UP':
