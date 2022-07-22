@@ -16,12 +16,12 @@ QMetrics provides three methods to select DRP:
 ### Metrics calculation
 QMetrics calculated following metrics
 
-<img src="https://latex.codecogs.com/svg.image?E&space;=&space;\sqrt{(\overline{log_{2}FC})^{2}&space;&plus;&space;(\overline{-log_{10}FDR})^{2}}" title="E = \sqrt{(\overline{log_{2}FC})^{2} + (\overline{-log_{10}FDR})^{2}}" />
-<img src="https://latex.codecogs.com/svg.image?E_{m}&space;=&space;\sqrt{(\overline{log_{2}FC}&space;-&space;T_{FC})^{2}&space;&plus;&space;(\overline{-log_{10}FDR}&space;-&space;T_{FDR})^{2}}" title="E_{m} = \sqrt{(\overline{log_{2}FC} - T_{FC})^{2} + (\overline{-log_{10}FDR} - T_{FDR})^{2}}" />
-<img src="https://latex.codecogs.com/svg.image?\pi_{1}&space;=&space;\sum_{i&space;=&space;1}&space;^{n}&space;\left|&space;log_{2}FC_{i}&space;\cdot&space;(-log_{10}FDR_{i})&space;\right|" title="\pi_{1} = \sum_{i = 1} ^{n} \left| log_{2}FC_{i} \cdot (-log_{10}FDR_{i}) \right|" />
-<img src="https://latex.codecogs.com/svg.image?\pi_{2}&space;=&space;log_{10}&space;\left(&space;\prod_{i&space;=&space;1}&space;^{n}&space;\left|&space;log_{2}FC_{i}&space;\cdot&space;(-log_{10}FDR_{i})\right|&space;\right)" title="\pi_{2} = log_{10} \left( \prod_{i = 1} ^{n} \left| log_{2}FC_{i} \cdot (-log_{10}FDR_{i})\right| \right)" />
+<img src="https://latex.codecogs.com/svg.image?\bg_white&space;E&space;=&space;\sqrt{\left(\overline{log_{2}FC}\right)^{2}&space;&plus;&space;\left(\overline{-log_{10}FDR}\right)^{2}}" title="\bg_white E = \sqrt{\left(\overline{log_{2}FC}\right)^{2} + \left(\overline{-log_{10}FDR}\right)^{2}}" />
+<img src="https://latex.codecogs.com/svg.image?\bg_white&space;E_{m}&space;=&space;\sqrt{\left(\overline{log_{2}FC}&space;-&space;T_{FC}\right)^{2}&space;&plus;&space;\left(\overline{-log_{10}FDR}&space;-&space;T_{FDR}\right)^{2}}" title="\bg_white E_{m} = \sqrt{\left(\overline{log_{2}FC} - T_{FC}\right)^{2} + \left(\overline{-log_{10}FDR} - T_{FDR}\right)^{2}}" />
+<img src="https://latex.codecogs.com/svg.image?\bg_white&space;\pi_{1}&space;=&space;\sum_{i&space;=&space;1}&space;^{n}&space;\left|&space;log_{2}FC_{i}&space;\cdot&space;\left(-log_{10}FDR_{i}\right)\right|" title="\bg_white \pi_{1} = \sum_{i = 1} ^{n} \left| log_{2}FC_{i} \cdot \left(-log_{10}FDR_{i}\right)\right|" />
+<img src="https://latex.codecogs.com/svg.image?\bg_white&space;\pi_{2}&space;=&space;log_{10}&space;\left(\prod_{i&space;=&space;1}&space;^{n}&space;\left|&space;log_{2}FC_{i}&space;\cdot&space;(-log_{10}FDR_{i})\right|&space;\right)" title="\bg_white \pi_{2} = log_{10} \left(\prod_{i = 1} ^{n} \left| log_{2}FC_{i} \cdot (-log_{10}FDR_{i})\right| \right)" />
 
-<img src="https://latex.codecogs.com/svg.image?T_{FC},&space;T_{FDR}" title="T_{FC},\  T_{FDR}" /> stand for fdr and fc thresholds respectively
+<img src="https://latex.codecogs.com/svg.image?\bg_white&space;T_{FC},&space;T_{FDR}" title="\bg_white T_{FC}, T_{FDR}" /> stand for fdr and fc thresholds respectively
 
 ## Installation
 Download from Github repository https://github.com/kazakova/Metrics. In the directory containing setup.py file run the following command:
@@ -84,6 +84,7 @@ QMetrics produces the following files:
 3. summary table with the results of statistical testing (Quant_res.tsv)
 4. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
 5. STRING network plot (GO_network.png) 
+
 
 
 
