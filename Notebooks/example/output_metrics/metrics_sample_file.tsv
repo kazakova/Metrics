@@ -1,0 +1,18 @@
+	path to file	dataset	dataname
+0	example/input_go_terms_analysis/NSAF_t-test_a172_dbtrg_A172.tsv	DBTRG&HOS IFNa	HOS IFNa-2b 1000 24h
+1	example/input_go_terms_analysis/NSAF_t-test_a172_dbtrg_DBTRG.tsv	DBTRG&HOS IFNa	DBTRG IFNa-2b 1000 24h
+2	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2017_infa_b.tsv	GBM2017 IFNa	GBM2017b IFNa-2b 100 24h
+3	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2017_infa_i.tsv	GBM2017 IFNa	GBM2017i IFNa-2b 100 24h
+4	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2017_infb_b.tsv	GBM2017 IFNb	GBM2017b IFNb-2b 1000 24h
+5	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2017_infb_i.tsv	GBM2017 IFNb	GBM2017i IFNb-2b 1000 24h
+6	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2019_3821.tsv	GBM2019 IFNa	GBM3821 IFNa-2b 100 24h
+7	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2019_4114.tsv	GBM2019 IFNa	GBM4114 IFNa-2b 100 24h
+8	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2019_5522.tsv	GBM2019 IFNa	GBM5522 IFNa-2b 100 24h
+9	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2019_6067.tsv	GBM2019 IFNa	GBM6067 IFNa-2b 100 24h
+10	example/input_go_terms_analysis/NSAF_t-test_glioblastoma_2019_AN.tsv	GBM2019 IFNa	AN IFNa-2b 100 24h
+11	example/input_go_terms_analysis/NSAF_t-test_time_infa_24.tsv	MRC5 IFNa	MRC5 IFNa-2b 500 24h
+12	example/input_go_terms_analysis/NSAF_t-test_time_infa_48.tsv	MRC5 IFNa	MRC5 IFNa-2b 500 48h
+13	example/input_go_terms_analysis/NSAF_t-test_time_infa_4.tsv	MRC5 IFNa	MRC5 IFNa-2b 500 4h
+14	example/input_go_terms_analysis/NSAF_t-test_time_infg_24.tsv	MRC5 IFNg	MRC5 IFNg 500 24h
+15	example/input_go_terms_analysis/NSAF_t-test_time_infg_48.tsv	MRC5 IFNg	MRC5 IFNg 500 48h
+16	example/input_go_terms_analysis/NSAF_t-test_time_infg_4.tsv	MRC5 IFNg	MRC5 IFNg 500 4h
