@@ -24,7 +24,7 @@ from PIL import Image
 import io
 import argparse
 
-def concat_norm(sample_df, sample_type, input_dir):
+def concat_norm(sample_df, sample_type, input_dir, pattern):
     dfs = []
     for label in sample_type.split(','): 
         df = pd.DataFrame()
@@ -38,7 +38,7 @@ def concat_norm(sample_df, sample_type, input_dir):
             if input_dir:
                 filedir = input_dir
             
-            path_to_file = path.join(filedir, filename) + '_protein_groups.tsv'*('protein_groups' not in file)
+            path_to_file = path.join(filedir, filename) + pattern*(pattern not in file)
             
             if path.exists(path_to_file) == False:
                 print(path_to_file, 'does not exist\n')
@@ -320,6 +320,7 @@ def main():
     ################# params
     pars = argparse.ArgumentParser()
     pars.add_argument('--sample-file', help = 'Path to sample file.')
+    pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common pattern. Default "_protein_groups.tsv"')
     pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
     pars.add_argument('--input-dir')
     pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
@@ -340,7 +341,7 @@ def main():
         print('Running {}\n'.format(sample_type))
 
     ################# Table concatenation and normalization
-        dfs = concat_norm(sample_df, sample_type, args.input_dir)
+        dfs = concat_norm(sample_df, sample_type, args.input_dir, args.pattern)
 
     ################# Adding absent proteins from another group
         ind_to_add_0 = set(dfs[1].index).difference(set(dfs[0].index))
