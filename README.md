@@ -38,7 +38,7 @@ QMetrics [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--inpu
 
 options:
   -h, --help            show this help message and exit
-  --pattern PATTERN     Input files common pattern. Default value is "_protein_groups.tsv"
+  --pattern PATTERN     Input files common endpattern. Default value is "_protein_groups.tsv".
   --sample-file SAMPLE_FILE
                         Path to sample file.
   --labels LABELS [LABELS ...] 
@@ -53,7 +53,7 @@ options:
   --regulation {UP,DOWN,all}
                         Target group of DRP
   --species SPECIES     
-                        NCBI species identifier. Default value is 9606 (H.sapiens)
+                        NCBI species identifier. Default value is 9606 (H.sapiens).
   --fold-change FOLD_CHANGE
                         Fold change threshold.
   --alpha ALPHA         
