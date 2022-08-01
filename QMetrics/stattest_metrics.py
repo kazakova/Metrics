@@ -320,7 +320,7 @@ def main():
     ################# params
     pars = argparse.ArgumentParser()
     pars.add_argument('--sample-file', help = 'Path to sample file.')
-    pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common pattern. Default "_protein_groups.tsv"')
+    pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
     pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
     pars.add_argument('--input-dir')
     pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
