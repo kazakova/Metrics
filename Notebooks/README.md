@@ -1,16 +1,25 @@
+## GO_terms_analysis.ipynb
 
-**Jupyter notebooks**
+*de_gene_list* selects differentially regulated proteins (DRP) based on selected method (for more detailed description see GO_terms_analysis.ipynb)
 
-https://github.com/kazakova/Metrics/blob/main/metrics.ipynb contains function that selects DE proteins based on selected method, calculate metrics on fold change and fdr values of these proteins with the usage example
+*show_string_picture* downloads GO terms enrichment results network from https://string-db.org
 
-Example of output plot ![metric_pi2_dynamic_UP+DOWN](https://user-images.githubusercontent.com/107166264/178030413-05b7cfda-6b16-4e82-ab37-81197aee3126.png)
+*load_go_entrichment* downloads tables with GO terms enrichment analysis results from https://string-db.org
 
-https://github.com/kazakova/Metrics/blob/main/volcano.ipynb contains function that creates volcano plot and counts DE proteins baised on selected methods with the usage example
+*enrichment_calculation* calculates enrichment and GO_score (formulas can be found at GO_terms_analysis.ipynb)
 
-Example of output plot ![volcano_plants_US_Leaves_US_Roots_US_static](https://user-images.githubusercontent.com/107166264/178030901-37c42ac7-3ebf-419f-b35a-55ae0bd91ee6.png)
+*top_processes* selects top N (default 10) processes from *load_go_enrichment* output files based on GO_score
 
+*processes_scatterplot* creates scatterplot based on *top_processes* output 
 
-https://github.com/kazakova/Metrics/blob/main/GO_terms_analysis.ipynb contains functions for DE proteins selection, GO terms enrichment analysis, GO score calculation and GO processes scatterplot with the usage example 
+## metrics.ipynb
+*metrics* selects differentially regulated proteins (DRP) based on selected method and calculate proteomic metrics (for more detailed description see metrics.ipynb)
 
-Processes scatterplot example ![processes_scatterplot](https://user-images.githubusercontent.com/107166264/178031440-332343ea-aedd-4a52-81ea-cc857e8ab191.png)
+## stat_test_kNN.ipynb
+*stat_test_kNN* performs missing value imputation with KNNImputer and performs statistical testing
 
+## stat_test_MinDet.ipynb
+*stat_test_MinDet* performs missing value imputation with minimum detected NSAF value and performs statistical testing
+
+## volcano.ipynb
+*volcano* creates volcano plot based on *stat_test* results
