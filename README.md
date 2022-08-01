@@ -65,7 +65,7 @@ Input file should contain following columns:
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*) 
 3. 'NSAF'
 
-We suggest using Scavager (https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
+We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
 
 ### Sample file
 The QMetrics tool needs a **sample** file and at least one **data** file for each of groups to compare.
@@ -110,3 +110,8 @@ pi1 = 1286.229911664442
 pi2 = 82.68135920680737
 
 ```
+
+## Extra Materials for Publication
+Apart from the **QMetrics** tool, this repository contains additional resources referenced in the article "PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY" (PROTEOMICS, submitted):
+• [Supplementary Tables](https://github.com/kazakova/Metrics/tree/main/Supplementary_materials)
+• [Jupyter Notebooks](https://github.com/kazakova/Metrics/tree/main/Notebooks) with original calculations (you can just use QMetrics on your data now) 
