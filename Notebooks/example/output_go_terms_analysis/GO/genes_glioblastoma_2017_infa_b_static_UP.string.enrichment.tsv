@@ -1,0 +1,29 @@
+category	term	number_of_genes	number_of_genes_in_background	ncbiTaxonId	inputGenes	preferredNames	p_value	fdr	description
+PMID	PMID:34937051	4	46	9606	KRT14,IFI44L,OAS1,IFI35	KRT14,IFI44L,OAS1,IFI35	2.62e-09	0.0073	(2022) Local and systemic responses to SARS-CoV-2 infection in children and adults.
+PMID	PMID:34340660	4	44	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	2.21e-09	0.0073	(2021) Baseline pro-inflammatory gene expression in whole blood is related to adverse long-term outcomes after transcatheter aortic valve replacement: a case control study.
+PMID	PMID:30993190	4	64	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	9.23e-09	0.0073	(2019) Differences in Gene Expression in Older Compared With Younger Kidney Transplant Recipients.
+PMID	PMID:31376495	4	44	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	2.21e-09	0.0073	(2019) Positive mental well-being and immune transcriptional profiles in highly involved videogame players.
+PMID	PMID:31763620	4	49	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	3.33e-09	0.0073	(2019) Molecular Correlates of Socioeconomic Status and Clinical Outcomes Following Hematopoietic Cell Transplantation for Leukemia.
+PMID	PMID:29579369	4	68	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	1.16e-08	0.0073	(2018) Genomic mechanisms of fatigue in survivors of colorectal cancer.
+PMID	PMID:29923288	4	43	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	2.03e-09	0.0073	(2018) Social genomics of healthy and disordered internet gaming.
+PMID	PMID:29176033	4	43	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	2.03e-09	0.0073	(2017) TNFalpha-senescence initiates a STAT-dependent positive feedback loop, leading to a sustained interferon signature, DNA damage, and cytokine secretion.
+PMID	PMID:26286914	4	52	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	4.17e-09	0.0073	(2016) Low Socioeconomic Status, Adverse Gene Expression Profiles, and Clinical Outcomes in Hematopoietic Stem Cell Transplant Recipients.
+PMID	PMID:27337553	4	50	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	3.59e-09	0.0073	(2016) Genome-Wide Profiling of RNA from Dried Blood Spots: Convergence with Bioinformatic Results Derived from Whole Venous Blood and Peripheral Blood Mononuclear Cells.
+PMID	PMID:27689900	4	42	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	1.86e-09	0.0073	(2016) Stress management, leukocyte transcriptional changes and breast cancer recurrence in a randomized trial: An exploratory analysis.
+PMID	PMID:25459894	4	50	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	3.59e-09	0.0073	(2015) Personality and gene expression: Do individual differences exist in the leukocyte transcriptome?
+PMID	PMID:26246388	4	48	9606	PTGS2,IFI44L,OAS1,IFI35	PTGS2,IFI44L,OAS1,IFI35	3.07e-09	0.0073	(2015) Loneliness, eudaimonia, and the human conserved transcriptional response to adversity.
+PMID	PMID:23507374	3	8	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	7.38e-09	0.0073	(2013) The physiologic increase in expression of some type I IFN-inducible genes during pregnancy is not associated with improved disease activity in pregnant patients with rheumatoid arthritis.
+PMID	PMID:21035159	4	60	9606	THAP12,IFI44L,OAS1,IFI35	PRKRIR,IFI44L,OAS1,IFI35	7.2e-09	0.0073	(2011) Early gene expression events in ferrets in response to SARS coronavirus infection versus direct interferon-alpha2b stimulation.
+PMID	PMID:32641977	3	16	9606	KRT14,IFI44L,OAS1	KRT14,IFI44L,OAS1	4.33e-08	0.0107	(2020) Bioengineering tools to speed up the discovery and preclinical testing of vaccines for SARS-CoV-2 and therapeutic agents for COVID-19.
+PMID	PMID:19676131	3	17	9606	THAP12,PTGS2,OAS1	PRKRIR,PTGS2,OAS1	5.09e-08	0.0118	(2009) Targeting cadherin-17 inactivates Wnt signaling and inhibits tumor growth in liver carcinoma.
+PMID	PMID:34347790	3	19	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	6.88e-08	0.0151	(2021) Identification of potential biomarkers in dengue via integrated bioinformatic analysis.
+PMID	PMID:34818375	3	19	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	6.88e-08	0.0151	(2021) Ten genes are considered as potential biomarkers for the diagnosis of dermatomyositis.
+PMID	PMID:28276456	3	22	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	1.03e-07	0.0202	(2017) Principal Components Analysis Based Unsupervised Feature Extraction Applied to Gene Expression Analysis of Blood from Dengue Haemorrhagic Fever Patients.
+PMID	PMID:29137231	3	23	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	1.16e-07	0.0218	(2017) An oral keratinocyte life cycle model identifies novel host genome regulation by human papillomavirus 16 relevant to HPV positive head and neck cancer.
+PMID	PMID:28786993	3	24	9606	PTGS2,OAS1,IFI35	PTGS2,OAS1,IFI35	1.3e-07	0.0234	(2017) A double blind placebo controlled randomized trial of the effect of acute uric acid changes on inflammatory markers in humans: A pilot study.
+PMID	PMID:24380850	3	24	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	1.3e-07	0.0234	(2014) Divergent gene expression responses to complicated grief and non-complicated grief.
+PMID	PMID:29777224	3	31	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	2.67e-07	0.0438	(2018) Progression of whole-blood transcriptional signatures from interferon-induced to neutrophil-associated patterns in severe influenza.
+PMID	PMID:21471287	3	31	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	2.67e-07	0.0438	(2011) Differential roles for the interferon-inducible IFI16 and AIM2 innate immune sensors for cytosolic DNA in cellular senescence of human fibroblasts.
+WikiPathways	WP4197	2	23	9606	OAS1,IFI35	OAS1,IFI35	4.36e-05	0.0296	Immune response to tuberculosis
+NetworkNeighborAL	CL:19391	3	36	9606	IFI44L,OAS1,IFI35	IFI44L,OAS1,IFI35	4.07e-07	0.0018	Interferon alpha/beta signaling, and ISG15-protein conjugation
+NetworkNeighborAL	CL:19399	2	11	9606	OAS1,IFI35	OAS1,IFI35	1.14e-05	0.0074	Mixed, incl. 2-5-oligoadenylate synthetase activity, and nephropathia epidemica
