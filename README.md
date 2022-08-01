@@ -104,10 +104,9 @@ pi2 = 127.02282548860697
 
 Running A172_I,A172_K
 
-example/LUM00985_VG_protein_groups.tsv does not exist
-
 Euclidean distance = 6.189393688035595
 Modified euclidean distance = 4.422287959089018
 pi1 = 1286.229911664442
 pi2 = 82.68135920680737
+
 ```
