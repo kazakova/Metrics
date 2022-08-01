@@ -113,5 +113,7 @@ pi2 = 82.68135920680737
 
 ## Extra Materials for Publication
 Apart from the **QMetrics** tool, this repository contains additional resources referenced in the article "PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY" (PROTEOMICS, submitted):
+
 • [Supplementary Tables](https://github.com/kazakova/Metrics/tree/main/Supplementary_materials)
+
 • [Jupyter Notebooks](https://github.com/kazakova/Metrics/tree/main/Notebooks) with original calculations (you can just use QMetrics on your data now) 
