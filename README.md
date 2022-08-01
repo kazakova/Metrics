@@ -27,38 +27,45 @@ QMetrics calculated following metrics
 Download from Github repository https://github.com/kazakova/Metrics. In the directory containing setup.py file run the following command:
 
 ```
-
 pip install .
 ```
 
 ## Usage
 ```
 QMetrics [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
-[--output-dir OUTPUT_DIR] [--imputtation {kNN,MinDet}] [--thresholds {static,semi-dynamic,dynamic}]
+[--output-dir OUTPUT_DIR] [--imputation {kNN,MinDet}] [--thresholds {static,semi-dynamic,dynamic}]
 [--regulation {UP,DOWN,all}] [--species SPECIES] [--fold-change FOLD_CHANGE] [--alpha ALPHA]
 
 options:
   -h, --help            show this help message and exit
   --sample-file SAMPLE_FILE
                         Path to sample file.
-  --labels LABELS [LABELS ...]
+  --labels LABELS [LABELS ...] 
                         Groups to compare.
   --input-dir INPUT_DIR
   --output-dir OUTPUT_DIR
-                        Directory to store the results. Default value is
-                        current directory.
+                        Directory to store the results. Default value is current directory.
   --imputation {kNN,MinDet}
                         Missing value imputation method.
   --thresholds {static,semi-dynamic,dynamic}
                         DRP thresholds selection method.
   --regulation {UP,DOWN,all}
                         Target group of DRP
-  --species SPECIES     NCBI species identifier. Default value 9606 (H.
-                        sapiens).
+  --species SPECIES     
+                        NCBI species identifier. Default value 9606 (H.sapiens)
   --fold-change FOLD_CHANGE
                         Fold change threshold.
-  --alpha ALPHA         False discovery rate threshold.
+  --alpha ALPHA         
+                        False discovery rate threshold.
   ```
+### Input files
+Input file should contain following columns: 
+1. 'dbname' (i.e. *sp|P14866|HNRPL_HUMAN*), 
+2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*), 
+3. 'NSAF'
+
+We suggest using Scavager (https://github.com/markmipt/scavager) *protein_groups* result files.
+
 ### Sample file
 The QMetrics tool needs a **sample** file and at least one **data** file for each of groups to compare.
 Sample file should be comma-separated and contain columns 'File Name' and 'SampleID'. 
@@ -67,15 +74,6 @@ Input directory can be given either with *--input_dir* or with 'File Name' in sa
 If both *--input-dir* and path with sample file are given, directory given with *--input-dir* will be used. 
   
 SampleID contain labels of groups to compare and should match those given by *--labels*.
-
-Sample file example
-
-| File Name                     | SampleID |
-|-------------------------------|----------|
-| LUM00925_VG                   | DBTRG_K  |
-| LUM00931_VG                   | DBTRG_I  |
-| LUM00968_VG                   | A172_K   |
-| LUM00973_VG                   | A172_I   |
  
 ### Output files
 QMetrics produces the following files:
@@ -85,6 +83,28 @@ QMetrics produces the following files:
 4. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
 5. STRING network plot (GO_network.png) 
 
+## Example
+Input and output files can be found in /example
 
+```
+QMetrics --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example 
+--output-dir example --imputation kNN --thresholds dynamic --regulation UP 
+```
+You will get following command line output 
+```
+Running DBTRG_I,DBTRG_K
 
+Euclidean distance = 9.574977793545823
+Modified euclidean distance = 6.9883518660824535
+pi1 = 2660.1372095391735
+pi2 = 127.02282548860697
 
+Running A172_I,A172_K
+
+example/LUM00985_VG_protein_groups.tsv does not exist
+
+Euclidean distance = 6.189393688035595
+Modified euclidean distance = 4.422287959089018
+pi1 = 1286.229911664442
+pi2 = 82.68135920680737
+```
