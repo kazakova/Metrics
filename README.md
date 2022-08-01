@@ -38,6 +38,7 @@ QMetrics [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--inpu
 
 options:
   -h, --help            show this help message and exit
+  --pattern PATTERN     Input files common pattern. Default value is "_protein_groups.tsv"
   --sample-file SAMPLE_FILE
                         Path to sample file.
   --labels LABELS [LABELS ...] 
@@ -52,7 +53,7 @@ options:
   --regulation {UP,DOWN,all}
                         Target group of DRP
   --species SPECIES     
-                        NCBI species identifier. Default value 9606 (H.sapiens)
+                        NCBI species identifier. Default value is 9606 (H.sapiens)
   --fold-change FOLD_CHANGE
                         Fold change threshold.
   --alpha ALPHA         
@@ -64,14 +65,16 @@ Input file should contain following columns:
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*), 
 3. 'NSAF'
 
-We suggest using Scavager (https://github.com/markmipt/scavager) *protein_groups* result files.
+We suggest using Scavager (https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
 
 ### Sample file
 The QMetrics tool needs a **sample** file and at least one **data** file for each of groups to compare.
 Sample file should be comma-separated and contain columns 'File Name' and 'SampleID'. 
 
 Input directory can be given either with *--input_dir* or with 'File Name' in sample file.
-If both *--input-dir* and path with sample file are given, directory given with *--input-dir* will be used. 
+If both *--input-dir* and path with sample file are given, directory given with *--input-dir* will be used.
+
+Pattern may or may not be included in 'File Name' (see example).
   
 SampleID contain labels of groups to compare and should match those given by *--labels*.
  
