@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 
 setup(
-    name                 = 'QMetrics',
+    name                 = 'QRePS',
     version              = '1.0',
     description          = '''A utility for statistical comparison of protein identification results in proteomics and calculation of
            quantitative metrics for total cellular response''',
@@ -18,5 +18,5 @@ setup(
                             'Topic :: Scientific/Engineering :: Physics'],
     license              = 'License :: OSI Approved :: Apache Software License',
     packages             = find_packages(),
-    entry_points         = {'console_scripts': ['QMetrics=QMetrics.stattest_metrics:main']},
+    entry_points         = {'console_scripts': ['QRePS=QRePS.stattest_metrics:main']},
     )
