@@ -1,20 +1,21 @@
-# QMetrics
+# QRePS
+An open source software to quantify cellular response in proteomics.
 
 ## Overview
-**QMetrics** is a tool for shotgun proteomics that performs statistical analysis on NSAF values in the results of proteome analysis. 
-QMetrics visualizes results of statistical testing with volcano plot and selects differentially regulated proteins (DRP) with different methods (listed below). 
-Based on selected features QMetrics calculates set of proteomic metrics and performs GO terms enrichment analysis with the use of https://string-db.org.
+**QRePS** is a tool for shotgun proteomics that performs statistical analysis on NSAF values in the results of proteome analysis. 
+QRePS visualizes results of statistical testing with volcano plot and selects differentially regulated proteins (DRP) with different methods (listed below). 
+Based on selected features QRePS calculates set of proteomic metrics and performs GO terms enrichment analysis with the use of [STRING](https://string-db.org).
 
 ### DRP selection
 
-QMetrics provides three methods to select DRP:
+QRePS provides three methods to select DRP:
 
 1. *static* - fold change and fdr thresholds are given by user
 2. *semi-dynamic* - fold change threshold is given by user and fdr threshold is calculated according to outliers rule: Q3 + 1.5 IQR
 3. *dynamic* - lower and upper fold change thresholds are calculated as Q1 - 1.5 IQR and Q3 + 1.5 IQR respectively, fdr threhold is calculated as in *semi-dynamic*
 
 ### Metrics calculation
-QMetrics calculated following metrics
+QRePS calculates following metrics
 
 <img src="https://latex.codecogs.com/svg.image?\bg_white&space;E&space;=&space;\sqrt{\left(\overline{log_{2}FC}\right)^{2}&space;&plus;&space;\left(\overline{-log_{10}FDR}\right)^{2}}" title="\bg_white E = \sqrt{\left(\overline{log_{2}FC}\right)^{2} + \left(\overline{-log_{10}FDR}\right)^{2}}" />
 <img src="https://latex.codecogs.com/svg.image?\bg_white&space;E_{m}&space;=&space;\sqrt{\left(\overline{log_{2}FC}&space;-&space;T_{FC}\right)^{2}&space;&plus;&space;\left(\overline{-log_{10}FDR}&space;-&space;T_{FDR}\right)^{2}}" title="\bg_white E_{m} = \sqrt{\left(\overline{log_{2}FC} - T_{FC}\right)^{2} + \left(\overline{-log_{10}FDR} - T_{FDR}\right)^{2}}" />
@@ -29,10 +30,13 @@ Download from Github repository https://github.com/kazakova/Metrics. In the dire
 ```
 pip install .
 ```
-
+Alternatively:
+```
+pip install git+https://github.com/kazakova/Metrics
+```
 ## Usage
 ```
-QMetrics [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
+qreps [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
 [--output-dir OUTPUT_DIR] [--imputation {kNN,MinDet}] [--thresholds {static,semi-dynamic,dynamic}]
 [--regulation {UP,DOWN,all}] [--species SPECIES] [--fold-change FOLD_CHANGE] [--alpha ALPHA]
 
@@ -68,7 +72,7 @@ Input file should contain following columns:
 We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
 
 ### Sample file
-The QMetrics tool needs a **sample** file and at least one **data** file for each of groups to compare.
+QRePS tool needs a **sample** file and at least one **data** file for each of groups to compare.
 Sample file should be comma-separated and contain columns 'File Name' and 'SampleID'. 
 
 Input directory can be given either with *--input_dir* or with 'File Name' in sample file.
@@ -79,7 +83,7 @@ Pattern may or may not be included in 'File Name' (see example).
 SampleID contain labels of groups to compare and should match those given by *--labels*.
  
 ### Output files
-QMetrics produces the following files:
+QRePS produces the following files:
 1. volcano plot (volcano.png)
 2. missing value ration distribution plot (NaN_distribution.png)
 3. summary table with the results of statistical testing (Quant_res.tsv)
@@ -90,7 +94,7 @@ QMetrics produces the following files:
 Input and output files can be found in /example
 
 ```
-QMetrics --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example 
+qreps --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example 
 --output-dir example --imputation kNN --thresholds dynamic --regulation UP 
 ```
 You will get following command line output 
@@ -112,8 +116,8 @@ pi2 = 82.68135920680737
 ```
 
 ## Extra Materials for Publication
-Apart from the **QMetrics** tool, this repository contains additional resources referenced in the article "PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY" (PROTEOMICS, submitted):
+Apart from the **QRePS** tool, this repository contains additional resources referenced in the article "PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY" (PROTEOMICS, submitted):
 
 • [Supplementary Tables](https://github.com/kazakova/Metrics/tree/main/Supplementary_materials)
 
-• [Jupyter Notebooks](https://github.com/kazakova/Metrics/tree/main/Notebooks) with original calculations (you can just use QMetrics on your data now) 
+• [Jupyter Notebooks](https://github.com/kazakova/Metrics/tree/main/Notebooks) with original calculations (you can just use QRePS on your data now) 
