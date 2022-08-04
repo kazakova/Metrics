@@ -94,8 +94,7 @@ QRePS produces the following files:
 Input and output files can be found in /example
 
 ```
-qreps --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example 
---output-dir example --imputation kNN --thresholds dynamic --regulation UP 
+qreps --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example --output-dir example --imputation kNN --thresholds dynamic --regulation UP 
 ```
 You will get following command line output 
 ```
