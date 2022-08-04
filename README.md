@@ -25,12 +25,12 @@ QRePS calculates following metrics
 <img src="https://latex.codecogs.com/svg.image?\bg_white&space;T_{FC},&space;T_{FDR}" title="\bg_white T_{FC}, T_{FDR}" /> stand for fdr and fc thresholds respectively
 
 ## Installation
-Download from Github repository https://github.com/kazakova/Metrics. In the directory containing setup.py file run the following command:
+Install from PyPI
+```
+pip install QRePS
+```
 
-```
-pip install .
-```
-Alternatively:
+Alternatively, you can install directly from GitHub::
 ```
 pip install git+https://github.com/kazakova/Metrics
 ```
