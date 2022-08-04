@@ -373,15 +373,16 @@ def main():
         if args.regulation == 'all':
             pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation, 
                                fold_change = args.fold_change, alpha = args.alpha)
+            metric_df = pd.DataFrame(data = {'pi1' : [pi1], 'pi2' : [pi2]})
             print('pi1 = {}\npi2 = {}'.format(pi1, pi2))
-            metric_df = pd.DataFrame(data = {'pi1' : [pi1], 'pi2' : [pi2]}
         else:
             e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
                                         fold_change = args.fold_change, alpha = args.alpha)
-            print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
             metric_df = pd.DataFrame(data = {'Euclidean distance' : [e], 
                                              'Modified euclidean distance' : [e_mod], 
-                                             'pi1' : [pi1], 'pi2' : [pi2]}
+                                             'pi1' : [pi1], 'pi2' : [pi2]})
+            print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
+            
     ################# GO
         filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
         show_string_picture(genes['Gene'], filename, args.species)
