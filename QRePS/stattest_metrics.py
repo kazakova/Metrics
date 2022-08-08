@@ -44,6 +44,7 @@ def concat_norm(sample_df, sample_type, input_dir, pattern):
                 print(path_to_file, 'does not exist\n')
             else:
                 d = pd.read_csv(path_to_file, sep = '\t')
+                d['description'] = d['description'].fillna('')
                 d['Protein'] = d['dbname'] + ' ' + d['description']
                 d.set_index(d['Protein'], inplace = True)
                 d.rename(columns = {'NSAF': file}, inplace = True)
