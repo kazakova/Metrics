@@ -394,3 +394,5 @@ def main():
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
         go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
         metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+        
+        return quant_res, go_res, metric_df
