@@ -404,4 +404,3 @@ def main():
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     args = pars.parse_args()
-    return QRePS(args)
