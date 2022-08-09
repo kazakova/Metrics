@@ -336,6 +336,10 @@ def main():
     #################
     sample_df = pd.read_csv(args.sample_file)
     sample_groups = args.labels
+    
+    quants = []
+    gos = []
+    metrics = []
 
     for sample_type in sample_groups:
         
@@ -395,4 +399,7 @@ def main():
         go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
         metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
         
-        return quant_res, go_res, metric_df
+        quants.append(quant_res)
+        gos.append(go_res)
+        metrics.append(go_res)
+    return quants, gos, metrics
