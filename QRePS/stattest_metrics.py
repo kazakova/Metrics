@@ -324,7 +324,7 @@ def QRePS(args):
     
     quants = []
     gos = []
-    metrics = []
+    res_metrics = []
 
     for sample_type in sample_groups:
         
@@ -386,8 +386,8 @@ def QRePS(args):
         
         quants.append(quant_res)
         gos.append(go_res)
-        metrics.append(go_res)
-    return quants, gos, metrics
+        res_metrics.append(go_res)
+    return quants, gos, res_metrics
 
 def main():
     ################# params
