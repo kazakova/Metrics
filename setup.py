@@ -5,7 +5,7 @@ setup(
     name                 = 'QRePS',
     version              = '1.0.1',
     description          = '''A utility for statistical comparison of protein identification results in proteomics and calculation of quantitative metrics for total cellular response''',
-#    long_description     = (''.join(open('README.MD').readlines())),
+    long_description     = (''.join(open('README.MD').readlines())),
 #    long_description_content_type="text/markdown",
     author               = 'Elizaveta Kazakova',
     author_email         = 'kazakova.em@phystech.edu',
