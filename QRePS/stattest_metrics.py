@@ -317,22 +317,7 @@ def enrichment_calculation(genes, d):
 
     return d
         
-def main():
-    ################# params
-    pars = argparse.ArgumentParser()
-    pars.add_argument('--sample-file', help = 'Path to sample file.')
-    pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
-    pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
-    pars.add_argument('--input-dir')
-    pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
-    pars.add_argument('--imputation', choices = ['kNN', 'MinDet'], help = 'Missing value imputation method.')
-    pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
-    pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
-    pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
-    pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
-    pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
-    args = pars.parse_args()
-    
+def QRePS(args):    
     #################
     sample_df = pd.read_csv(args.sample_file)
     sample_groups = args.labels
@@ -403,3 +388,20 @@ def main():
         gos.append(go_res)
         metrics.append(go_res)
     return quants, gos, metrics
+
+def main():
+    ################# params
+    pars = argparse.ArgumentParser()
+    pars.add_argument('--sample-file', help = 'Path to sample file.')
+    pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
+    pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
+    pars.add_argument('--input-dir')
+    pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
+    pars.add_argument('--imputation', choices = ['kNN', 'MinDet'], help = 'Missing value imputation method.')
+    pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
+    pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
+    pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
+    pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
+    pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
+    args = pars.parse_args()
+    return QRePS(args)
