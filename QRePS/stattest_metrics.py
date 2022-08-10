@@ -386,7 +386,7 @@ def QRePS(args):
         
         quants.append(quant_res)
         gos.append(go_res)
-        res_metrics.append(go_res)
+        res_metrics.append(metric_df)
     return quants, gos, res_metrics
 
 def main():
