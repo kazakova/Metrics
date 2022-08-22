@@ -319,7 +319,7 @@ def enrichment_calculation(genes, d):
         
 def QRePS(args):    
     #################
-    sample_df = pd.read_csv(args.sample_file)
+    
     sample_groups = args.labels
     
     quants = []
@@ -329,26 +329,36 @@ def QRePS(args):
     for sample_type in sample_groups:
         
         print('Running {}\n'.format(sample_type))
+        
+        if args.sample_file:
+            sample_df = pd.read_csv(args.sample_file)
+        
+        ################# Table concatenation and normalization
+            dfs = concat_norm(sample_df, sample_type, args.input_dir, args.pattern)
 
-    ################# Table concatenation and normalization
-        dfs = concat_norm(sample_df, sample_type, args.input_dir, args.pattern)
+        ################# Adding absent proteins from another group
+            ind_to_add_0 = set(dfs[1].index).difference(set(dfs[0].index))
+            ind_to_add_1 = set(dfs[0].index).difference(set(dfs[1].index))
 
-    ################# Adding absent proteins from another group
-        ind_to_add_0 = set(dfs[1].index).difference(set(dfs[0].index))
-        ind_to_add_1 = set(dfs[0].index).difference(set(dfs[1].index))
+            dfs[0] = pd.concat([dfs[0], pd.DataFrame(index = list(ind_to_add_0), columns = dfs[0].columns)], axis = 0)
+            dfs[1] = pd.concat([dfs[1], pd.DataFrame(index = list(ind_to_add_1), columns = dfs[1].columns)], axis = 0)
 
-        dfs[0] = pd.concat([dfs[0], pd.DataFrame(index = list(ind_to_add_0), columns = dfs[0].columns)], axis = 0)
-        dfs[1] = pd.concat([dfs[1], pd.DataFrame(index = list(ind_to_add_1), columns = dfs[1].columns)], axis = 0)
+        ################# NaNs block
+            drop_list_proteins = nan_block(dfs, sample_type, args.output_dir)
+            dfs = [i.drop(labels = drop_list_proteins, axis = 0) for i in dfs]
 
-    ################# NaNs block
-        drop_list_proteins = nan_block(dfs, sample_type, args.output_dir)
-        dfs = [i.drop(labels = drop_list_proteins, axis = 0) for i in dfs]
+        ################# Imputation 
+            dfs = imputation(dfs, args.imputation)
 
-    ################# Imputation 
-        dfs = imputation(dfs, args.imputation)
-
-    ################# Stat testing
-        quant_res = stat_test(dfs, 0.01)
+        ################# Stat testing
+            quant_res = stat_test(dfs, 0.01)
+        else:
+            quant_res = pd.read_csv(args.quantitation_file, sep = '\t')
+            if 'Gene' not in quant_res.columns():
+                quant_res['Gene'] = quant_res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0] 
+                                                          if 'GN=' in x else x.split(' ')[0])
+            quant_res = quant_res.set_index('Protein')
+            quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
 
     ################# Volcano plot
         volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
@@ -392,7 +402,9 @@ def QRePS(args):
 def main():
     ################# params
     pars = argparse.ArgumentParser()
-    pars.add_argument('--sample-file', help = 'Path to sample file.')
+    group = parser.add_mutually_exclusive_group(required = True)
+    group.add_argument('--sample-file', help = 'Path to sample file.')
+    group.add_argument('--quantitation-file', help = 'Path to quantitative analysis results file')
     pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
     pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
     pars.add_argument('--input-dir')
@@ -404,4 +416,8 @@ def main():
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     args = pars.parse_args()
+    if not args.sample_file:
+        if args.pattern: print('argument --pattern is not allowed with argument --quantitation-file')
+        elif args.input_dir: print('argument --input-dir is not allowed with argument --quantitation-file')
+        elif args.imputation: print('argument --imputation is not allowed with argument --quantitation-file')
     QRePS(args)
