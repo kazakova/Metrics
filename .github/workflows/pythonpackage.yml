@@ -8,6 +8,7 @@ on:
     paths:
       - 'QRePS/*.py'
       - setup.py
+      -  test/*.py
   pull_request:
     paths:
       - 'QRePS/*.py'
