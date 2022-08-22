@@ -27,9 +27,13 @@ class QRePSResultTest(unittest.TestCase):
             args = argparse.Namespace(sample_file=os.path.join(datadir, 'a172_dbtrg_sample.csv'), labels=['DBTRG_I,DBTRG_K','A172_I,A172_K'], input_dir=datadir, output_dir=tmpdir, imputation='kNN', thresholds='dynamic', regulation='UP', pattern = '_protein_groups.tsv', species = '9606', fold_change=2, alpha=0.01)
             self.quants, self.gos, self.metrics = QRePS(args)
         for i in range(2):
+            print(i)
             q = self.quants[i]
             m = self.metrics[i]
             self.assertEqual(true_q[i].index.tolist(), q.index.tolist())
-            np.testing.assert_almost_equal(q['log2(fold_change)'].values, true_q[i]['log2(fold_change)'].values, 5)
-            np.testing.assert_almost_equal(q['-log10(fdr_BH)'].values, true_q[i]['-log10(fdr_BH)'].values, 5)
-            np.testing.assert_almost_equal(m.iloc[0].values, true_m[i].iloc[0].values, 5)
+            for j in q.index:
+                print(j)
+                  self.assertEqual(true_q[i].loc[j, 'log2(fold_change)'], q.loc[j, 'log2(fold_change)'])
+#             np.testing.assert_almost_equal(q['log2(fold_change)'].values, true_q[i]['log2(fold_change)'].values, 5)
+#             np.testing.assert_almost_equal(q['-log10(fdr_BH)'].values, true_q[i]['-log10(fdr_BH)'].values, 5)
+#             np.testing.assert_almost_equal(m.iloc[0].values, true_m[i].iloc[0].values, 5)
