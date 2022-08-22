@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-import os
+from setuptools import setup
 
 setup(
     name                 = 'QRePS',
@@ -16,6 +15,6 @@ setup(
                             'Topic :: Scientific/Engineering :: Chemistry',
                             'Topic :: Scientific/Engineering :: Physics'],
     license              = 'License :: OSI Approved :: Apache Software License',
-    packages             = find_packages(),
+    packages             = ['QRePS'],
     entry_points         = {'console_scripts': ['qreps=QRePS.stattest_metrics:main']},
     )
