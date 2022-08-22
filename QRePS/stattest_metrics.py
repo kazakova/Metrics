@@ -354,7 +354,7 @@ def QRePS(args):
             quant_res = stat_test(dfs, 0.01)
         else:
             quant_res = pd.read_csv(args.quantitation_file, sep = '\t')
-            if 'Gene' not in quant_res.columns():
+            if 'Gene' not in quant_res.columns:
                 quant_res['Gene'] = quant_res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0] 
                                                           if 'GN=' in x else x.split(' ')[0])
             quant_res = quant_res.set_index('Protein')
@@ -404,7 +404,7 @@ def main():
     pars = argparse.ArgumentParser()
     group = pars.add_mutually_exclusive_group(required = True)
     group.add_argument('--sample-file', help = 'Path to sample file.')
-    group.add_argument('--quantitation-file', help = 'Path to quantitative analysis results file')
+    group.add_argument('--quantitation-file', help = 'Path to quantitative analysis results file.')
     pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
     pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
     pars.add_argument('--input-dir')
