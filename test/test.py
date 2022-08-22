@@ -30,6 +30,6 @@ class QRePSResultTest(unittest.TestCase):
             q = self.quants[i]
             m = self.metrics[i]
             self.assertEqual(true_q[i].index.tolist(), q.index.tolist())
-            np.testing.assert_almost_equal(q['log2(fold_change)'], true_q[i]['log2(fold_change)'], 5)
-            np.testing.assert_almost_equal(q['-log10(fdr_BH)'], true_q[i]['-log10(fdr_BH)'], 5)
-            np.testing.assert_almost_equal(m.iloc[0], true_m[i].iloc[0], 5)
+            np.testing.assert_almost_equal(q['log2(fold_change)'].values, true_q[i]['log2(fold_change)'].values, 5)
+            np.testing.assert_almost_equal(q['-log10(fdr_BH)'].values, true_q[i]['-log10(fdr_BH)'].values, 5)
+            np.testing.assert_almost_equal(m.iloc[0].values, true_m[i].iloc[0].values, 5)
