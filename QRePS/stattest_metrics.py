@@ -402,7 +402,7 @@ def QRePS(args):
 def main():
     ################# params
     pars = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group(required = True)
+    group = pars.add_mutually_exclusive_group(required = True)
     group.add_argument('--sample-file', help = 'Path to sample file.')
     group.add_argument('--quantitation-file', help = 'Path to quantitative analysis results file')
     pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
