@@ -31,10 +31,13 @@ class QRePSResultTest(unittest.TestCase):
             q = self.quants[i]
             m = self.metrics[i]
             self.assertEqual(true_q[i].index.tolist(), q.index.tolist())
-            for j in q.index:
-                if abs(true_q[i].loc[j, 'log2(fold_change)'] - q.loc[j, 'log2(fold_change)']) > 0.00001:
-                    print(j)
+            n_proteins = q.shape[0]
+            n_err = ((true_q[i]['log2(fold_change)'] - q['log2(fold_change)']).abs() > 1e-5)/sum()
+            self.assertLess(n_err, n_proteins//100)
+#             for j in q.index:
+#                 if abs(true_q[i].loc[j, 'log2(fold_change)'] - q.loc[j, 'log2(fold_change)']) > 1e-5:
+#                     print(j)
 #                 self.assertAlmostEqual()
 #             np.testing.assert_almost_equal(q['log2(fold_change)'].values, true_q[i]['log2(fold_change)'].values, 5)
 #             np.testing.assert_almost_equal(q['-log10(fdr_BH)'].values, true_q[i]['-log10(fdr_BH)'].values, 5)
-#             np.testing.assert_almost_equal(m.iloc[0].values, true_m[i].iloc[0].values, 5)
+            np.testing.assert_almost_equal(m.iloc[0].values, true_m[i].iloc[0].values, 5)
