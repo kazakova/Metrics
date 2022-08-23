@@ -36,6 +36,6 @@ class QRePSResultTest(unittest.TestCase):
             print(n_err)
             self.assertLess(n_err, n_proteins//100)
             
-            mean_metrics = (np.arra(m.iloc[0].values) + np.array(true_m[i].iloc[0].values))/2
+            mean_metrics = (np.array(m.iloc[0].values) + np.array(true_m[i].iloc[0].values))/2
             diff_metrics = np.abs(np.array(m.iloc[0].values) - np.array(true_m[i].iloc[0].values))
-            np.testing.assert_array_less([0.01]*4, diff_metrics/mean_metrics)
+            np.testing.assert_array_less(diff_metrics/mean_metrics, [0.01]*4)
