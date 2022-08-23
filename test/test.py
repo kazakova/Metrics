@@ -32,7 +32,7 @@ class QRePSResultTest(unittest.TestCase):
             m = self.metrics[i]
             self.assertEqual(true_q[i].index.tolist(), q.index.tolist())
             n_proteins = q.shape[0]
-            n_err = ((true_q[i]['log2(fold_change)'] - q['log2(fold_change)']).abs() > 1e-5)/sum()
+            n_err = ((true_q[i]['log2(fold_change)'] - q['log2(fold_change)']).abs() > 1e-5).sum()
             self.assertLess(n_err, n_proteins//100)
 #             for j in q.index:
 #                 if abs(true_q[i].loc[j, 'log2(fold_change)'] - q.loc[j, 'log2(fold_change)']) > 1e-5:
