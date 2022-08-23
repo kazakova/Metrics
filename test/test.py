@@ -27,12 +27,12 @@ class QRePSResultTest(unittest.TestCase):
             args = argparse.Namespace(sample_file=os.path.join(datadir, 'a172_dbtrg_sample.csv'), labels=['DBTRG_I,DBTRG_K','A172_I,A172_K'], input_dir=datadir, output_dir=tmpdir, imputation='kNN', thresholds='dynamic', regulation='UP', pattern = '_protein_groups.tsv', species = '9606', fold_change=2, alpha=0.01)
             self.quants, self.gos, self.metrics = QRePS(args)
         for i in range(2):
-            print(i)
             q = self.quants[i]
             m = self.metrics[i]
             self.assertEqual(true_q[i].index.tolist(), q.index.tolist())
             n_proteins = q.shape[0]
             n_err = ((true_q[i]['log2(fold_change)'] - q['log2(fold_change)']).abs() > 1e-5).sum()
+            print(n_err)
             self.assertLess(n_err, n_proteins//100)
 #             for j in q.index:
 #                 if abs(true_q[i].loc[j, 'log2(fold_change)'] - q.loc[j, 'log2(fold_change)']) > 1e-5:
