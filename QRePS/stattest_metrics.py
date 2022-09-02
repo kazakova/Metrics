@@ -275,6 +275,7 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
     return res[['fold_change', '-log10(fdr_BH)', 'Gene']]
 
 def show_string_picture(genes, filename, species):
+    print(genes)
     string_api_url = "https://string-db.org/api/"
     output_format = "image"
     method = "network"
@@ -385,7 +386,6 @@ def QRePS(args):
             
     ################# GO
         if genes['Gene'].count() > 0:
-            print(genes['Gene'])
             filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
