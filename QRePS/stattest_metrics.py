@@ -282,7 +282,7 @@ def show_string_picture(genes, filename, species):
     method = "network"
     request_url = string_api_url + output_format + "/" + method
     params = {
-    "identifiers" : "%0d".join(genes), # your protein
+    "identifiers" : "%0d".join(genes.values), # your protein
     "species" : species, # species NCBI identifier 
     }
     try:
@@ -301,7 +301,7 @@ def load_go_enrichment(genes,species):
     method = "enrichment"
     request_url = string_api_url + output_format + "/" + method
     params = {
-    "identifiers" : "%0d".join(genes), # your protein
+    "identifiers" : "%0d".join(genes.values), # your protein
     "species" : species, # species NCBI identifier 
     }
     try:
