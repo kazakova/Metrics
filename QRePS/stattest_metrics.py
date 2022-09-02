@@ -422,7 +422,7 @@ def main():
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     args = pars.parse_args()
     if not args.sample_file:
-        if args.pattern: print('argument --pattern is not allowed with argument --quantitation-file')
+        if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed with argument --quantitation-file')
         elif args.input_dir: print('argument --input-dir is not allowed with argument --quantitation-file')
         elif args.imputation: print('argument --imputation is not allowed with argument --quantitation-file')
     QRePS(args)
