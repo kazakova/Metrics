@@ -397,7 +397,7 @@ def QRePS(args):
             gs.append(None)
         
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
-        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None
+        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
         quants.append(quant_res)
         res_metrics.append(metric_df)
     return quants, gos, res_metrics
