@@ -385,6 +385,7 @@ def QRePS(args):
             
     ################# GO
         if genes['Gene'].count() > 0:
+            print(genes['Gene'])
             filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
@@ -394,7 +395,7 @@ def QRePS(args):
             gos.append(go_res)
         else:
             print('No genes available for GO enrichment analysis')
-            gs.append(None)
+            gos.append(None)
         
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
         metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
