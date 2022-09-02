@@ -384,18 +384,21 @@ def QRePS(args):
             print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
             
     ################# GO
-        filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
-        show_string_picture(genes['Gene'], filename, args.species)
-        response = load_go_enrichment(genes['Gene'], args.species)
-        go_res = pd.read_table(io.StringIO(response.text))
-        go_res = enrichment_calculation(genes, go_res)
+        if genes['Gene'].count() > 0:
+            filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
+            show_string_picture(genes['Gene'], filename, args.species)
+            response = load_go_enrichment(genes['Gene'], args.species)
+            go_res = pd.read_table(io.StringIO(response.text))
+            go_res = enrichment_calculation(genes, go_res)
+            go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+            gos.append(go_res)
+        else:
+            print('No genes available for GO enrichment analysis')
+            gs.append(None)
         
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
-        go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
-        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
-        
+        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None
         quants.append(quant_res)
-        gos.append(go_res)
         res_metrics.append(metric_df)
     return quants, gos, res_metrics
 
