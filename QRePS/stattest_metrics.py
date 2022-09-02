@@ -276,7 +276,6 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
 def show_string_picture(genes, filename, species):
     genes = genes.dropna(axis = 0)
-    print(genes)
     string_api_url = "https://string-db.org/api/"
     output_format = "image"
     method = "network"
@@ -296,6 +295,7 @@ def show_string_picture(genes, filename, species):
         print(exception)
         
 def load_go_enrichment(genes,species):
+    genes = genes.dropna(axis = 0)
     string_api_url = "https://string-db.org/api/"
     output_format = "tsv"
     method = "enrichment"
