@@ -32,7 +32,7 @@ pip install git+https://github.com/kazakova/Metrics
 ```
 ## Usage
 ```
-qreps [-h] [--sample-file SAMPLE_FILE] [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
+qreps [-h] (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE) [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
 [--output-dir OUTPUT_DIR] [--imputation {kNN,MinDet}] [--thresholds {static,semi-dynamic,dynamic}]
 [--regulation {UP,DOWN,all}] [--species SPECIES] [--fold-change FOLD_CHANGE] [--alpha ALPHA]
 
@@ -41,6 +41,8 @@ options:
   --pattern PATTERN     Input files common endpattern. Default value is "_protein_groups.tsv".
   --sample-file SAMPLE_FILE
                         Path to sample file.
+  --quantitation-file QUANTITATION_FILE
+                        Path to quantitative analysis results file.
   --labels LABELS [LABELS ...] 
                         Groups to compare.
   --input-dir INPUT_DIR
