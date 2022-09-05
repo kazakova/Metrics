@@ -62,10 +62,16 @@ options:
                         False discovery rate threshold.
   ```
 ### Input files
-Input file should contain following columns: 
+QRePS can be used two different ways:
+1. Perform quantitative analysis (--input-dir, --pattern, --imputation, --sample-file parameters)
+2. Use external quantitative analysis results (--quantitation-file parameter)
+
+Input file for quantitative analysis should contain following columns: 
 1. 'dbname' (i.e. *sp|P14866|HNRPL_HUMAN*) 
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*) 
 3. 'NSAF'
+
+**Quantitation file** should contain 'log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'Protein'
 
 We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
 
