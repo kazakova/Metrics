@@ -66,7 +66,7 @@ QRePS can be used two different ways:
 1. Perform quantitative analysis (--input-dir, --pattern, --imputation, --sample-file parameters)
 2. Use external quantitative analysis results (--quantitation-file parameter)
 
-Input file for quantitative analysis should contain following columns: 
+Input files for **quantitative analysis** should contain following columns: 
 1. 'dbname' (i.e. *sp|P14866|HNRPL_HUMAN*) 
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*) 
 3. 'NSAF'
