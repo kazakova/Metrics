@@ -313,7 +313,7 @@ def load_go_enrichment(genes,species):
 def enrichment_calculation(genes, d, fasta_size):
     n_genes = genes.shape[0]
     d['-log10(fdr)'] = d['fdr'].apply(lambda x: -np.log10(x))
-    d['Enrichment'] = d['number_of_genes']*args.fasta_size/d['number_of_genes_in_background']/n_genes
+    d['Enrichment'] = d['number_of_genes']*fasta_size/d['number_of_genes_in_background']/n_genes
     d['Enrichment'] = d['Enrichment'].apply(lambda x: np.log10(x))
     d['GO_score'] = d['-log10(fdr)'] * d['Enrichment']
 
