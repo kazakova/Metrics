@@ -310,10 +310,10 @@ def load_go_enrichment(genes,species):
     except urllib.error.HTTPError as exception:
         print(exception)
 
-def enrichment_calculation(genes, d, fasta_size):
+def enrichment_calculation(genes, d, args.fasta_size):
     n_genes = genes.shape[0]
     d['-log10(fdr)'] = d['fdr'].apply(lambda x: -np.log10(x))
-    d['Enrichment'] = d['number_of_genes']*fasta_size/d['number_of_genes_in_background']/n_genes
+    d['Enrichment'] = d['number_of_genes']*args.fasta_size/d['number_of_genes_in_background']/n_genes
     d['Enrichment'] = d['Enrichment'].apply(lambda x: np.log10(x))
     d['GO_score'] = d['-log10(fdr)'] * d['Enrichment']
 
@@ -422,7 +422,7 @@ def main():
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
-    pars.add_argument('--fasta-size', default = 20417, help = 'Number of proteins in database for enrichment calculation')
+    pars.add_argument('--fasta-size', type = float, default = 20417, help = 'Number of proteins in database for enrichment calculation')
     args = pars.parse_args()
     if not args.sample_file:
         if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed with argument --quantitation-file')
