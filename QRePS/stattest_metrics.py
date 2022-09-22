@@ -310,10 +310,10 @@ def load_go_enrichment(genes,species):
     except urllib.error.HTTPError as exception:
         print(exception)
 
-def enrichment_calculation(genes, d):
+def enrichment_calculation(genes, d, fasta_size):
     n_genes = genes.shape[0]
     d['-log10(fdr)'] = d['fdr'].apply(lambda x: -np.log10(x))
-    d['Enrichment'] = d['number_of_genes']*20000/d['number_of_genes_in_background']/n_genes
+    d['Enrichment'] = d['number_of_genes']*args.fasta_size/d['number_of_genes_in_background']/n_genes
     d['Enrichment'] = d['Enrichment'].apply(lambda x: np.log10(x))
     d['GO_score'] = d['-log10(fdr)'] * d['Enrichment']
 
@@ -395,7 +395,7 @@ def QRePS(args):
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
             go_res = pd.read_table(io.StringIO(response.text))
-            go_res = enrichment_calculation(genes, go_res)
+            go_res = enrichment_calculation(genes, go_res, args.fasta_size)
             go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
             gos.append(go_res)
         else:
@@ -422,6 +422,7 @@ def main():
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
+    pars.add_argument('--fasta-size', default = 20417, help = 'Number of proteins in database for enrichment calculation')
     args = pars.parse_args()
     if not args.sample_file:
         if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed with argument --quantitation-file')
