@@ -361,6 +361,8 @@ def QRePS(args):
                                                           if 'GN=' in x else x.split(' ')[0])
             quant_res = quant_res.set_index('Protein')
             quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
+            
+        quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
 
     ################# Volcano plot
         volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
@@ -385,6 +387,8 @@ def QRePS(args):
                                              'pi1' : [pi1], 'pi2' : [pi2]})
             print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
             
+        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+            
     ################# GO
         if genes['Gene'].count() > 0:
             filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
@@ -397,9 +401,7 @@ def QRePS(args):
         else:
             print('No genes available for GO enrichment analysis')
             gos.append(None)
-        
-        quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
-        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+     
         quants.append(quant_res)
         res_metrics.append(metric_df)
     return quants, gos, res_metrics
