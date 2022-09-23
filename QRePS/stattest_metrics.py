@@ -225,7 +225,7 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
     
     #горизонтальная линия с оптимизированным порогом
     g.ax_joint.plot(d['log2(fold_change)'], [b]*len(d['log2(fold_change)']), color = "black", linestyle = ':',
-        label = f'{dyn:.2e}')
+        label = 'fdr = ' + f'{dyn:.2e}')
 
     #горизонтальная линия с alpha = 0.05 (default)
     g.ax_joint.plot(d['log2(fold_change)'], [-np.log10(alpha)]*len(d['log2(fold_change)']), color = "red", 
