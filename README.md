@@ -32,37 +32,47 @@ pip install git+https://github.com/kazakova/Metrics
 ```
 ## Usage
 ```
-qreps [-h] (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE) [--labels LABELS [LABELS ...]] [--input-dir INPUT_DIR] 
-[--output-dir OUTPUT_DIR] [--imputation {kNN,MinDet}] [--thresholds {static,semi-dynamic,dynamic}]
-[--regulation {UP,DOWN,all}] [--species SPECIES] [--fold-change FOLD_CHANGE] [--alpha ALPHA]
+qreps  [-h]
+       (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE)
+       [--pattern PATTERN] [--labels LABELS [LABELS ...]]
+       [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
+       [--imputation {kNN,MinDet}]
+       [--thresholds {static,semi-dynamic,dynamic}]
+       [--regulation {UP,DOWN,all}] [--species SPECIES]
+       [--fold-change FOLD_CHANGE] [--alpha ALPHA]
+       [--fasta-size FASTA_SIZE]
 
 options:
   -h, --help            show this help message and exit
-  --pattern PATTERN     Input files common endpattern. Default value is "_protein_groups.tsv".
   --sample-file SAMPLE_FILE
                         Path to sample file.
   --quantitation-file QUANTITATION_FILE
                         Path to quantitative analysis results file.
-  --labels LABELS [LABELS ...] 
+  --pattern PATTERN     Input files common endpattern. Default
+                        "_protein_groups.tsv".
+  --labels LABELS [LABELS ...]
                         Groups to compare.
   --input-dir INPUT_DIR
   --output-dir OUTPUT_DIR
-                        Directory to store the results. Default value is current directory.
+                        Directory to store the results. Default value is
+                        current directory.
   --imputation {kNN,MinDet}
                         Missing value imputation method.
   --thresholds {static,semi-dynamic,dynamic}
-                        DRP thresholds selection method.
+                        DE thresholds method.
   --regulation {UP,DOWN,all}
-                        Target group of DRP
-  --species SPECIES     
-                        NCBI species identifier. Default value is 9606 (H.sapiens).
+                        Target group of DE proteins.
+  --species SPECIES     NCBI species identifier. Default value 9606 (H.
+                        sapiens).
   --fold-change FOLD_CHANGE
                         Fold change threshold.
-  --alpha ALPHA         
-                        False discovery rate threshold.
+  --alpha ALPHA         False discovery rate threshold.
+  --fasta-size FASTA_SIZE
+                        Number of proteins in database for enrichment
+                        calculation
   ```
 ### Input files
-QRePS can be used two different ways:
+QRePS can be used in two different ways:
 1. Perform quantitative analysis (--input-dir, --pattern, --imputation, --sample-file parameters)
 2. Use external quantitative analysis results (--quantitation-file parameter)
 
@@ -71,12 +81,12 @@ Input files for **quantitative analysis** should contain following columns:
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*) 
 3. 'NSAF'
 
-**Quantitation file** should contain 'log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'Protein'
+**Quantitation file** should contain 'log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'Protein' columns
 
-We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files to use with *--pattern*.
+We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files are to be taken from *--input-dir* with common endpattern *--pattern*.
 
 ### Sample file
-QRePS tool needs a **sample** file and at least one **data** file for each of groups to compare.
+QRePS tool needs a **sample** file and at least one **data** file for each of groups to perform quantitative analysis.
 Sample file should be comma-separated and contain columns 'File Name' and 'SampleID'. 
 
 Input directory can be given either with *--input_dir* or with 'File Name' in sample file.
@@ -84,19 +94,19 @@ If both *--input-dir* and path with sample file are given, directory given with 
 
 Pattern may or may not be included in 'File Name' (see example).
   
-SampleID contain labels of groups to compare and should match those given by *--labels*.
+SampleID contain labels of groups to be compared and should match those given by *--labels*.
  
 ### Output files
 QRePS produces the following files:
 1. volcano plot (volcano.png)
-2. missing value ration distribution plot (NaN_distribution.png)
+2. missing value ration distribution plot (NaN_distribution.png) (*only if quantitative analysis is performed*)
 3. summary table with the results of statistical testing (Quant_res.tsv)
 4. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
 5. STRING network plot (GO_network.png) 
 
 ## Example
 Input and output files can be found in /example
-
+1. Quantiative analysis
 ```
 qreps --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example --output-dir example --imputation kNN --thresholds dynamic --regulation UP 
 ```
@@ -116,6 +126,9 @@ Modified euclidean distance = 4.422287959089018
 pi1 = 1286.229911664442
 pi2 = 82.68135920680737
 
+```
+2. External quantitative analysis results
+```
 ```
 
 ## Extra Materials for Publication
