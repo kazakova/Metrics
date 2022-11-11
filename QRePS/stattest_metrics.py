@@ -17,7 +17,7 @@ from sklearn.impute import KNNImputer
 from scipy.stats import iqr
 
 from matplotlib.pyplot import imread, imshow
-% matplotlib.inline 
+%matplotlib.inline 
 import urllib.error
 
 import requests
