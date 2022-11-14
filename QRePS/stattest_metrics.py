@@ -23,6 +23,7 @@ import requests
 from PIL import Image
 import io
 import argparse
+import cairosvg
 
 def concat_norm(sample_df, sample_type, input_dir, pattern):
     dfs = []
@@ -286,10 +287,15 @@ def show_string_picture(genes, filename, species):
     }
     try:
         res = requests.post(request_url, params)
-        img = Image.open(io.BytesIO(res.content))
-        plt.figure(dpi = 600)
-        imgplot = imshow(img)
-        plt.savefig(filename, bbox_inches='tight')
+        img_png = cairosvg.svg2png(bytestring = res.content, dpi = 600)
+        img = Image.open(io.BytesIO(img_png))
+        
+        fig, ax = plt.subplots()
+        ax.imshow(img)
+        ax.yaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
+        ax.xaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
+        
+        plt.savefig(filename, bbox_inches ='tight', dpi = 600)
         plt.close()
     except urllib.error.HTTPError as exception:
         print(exception)
