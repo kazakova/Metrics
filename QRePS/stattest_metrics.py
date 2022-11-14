@@ -83,7 +83,7 @@ def imputation(dfs, method):
         res = []
         for df in dfs:
             df = df[df.columns[:-1]]
-            res.append(df.fillna(df.min(axis = 0), axis = 0))
+            res.append(df.fillna(df.min(axis = 0), axis = 0).sort_index())
         return res
     
 def imputation_kNN(dfs):
