@@ -25,6 +25,8 @@ import io
 import argparse
 import cairosvg
 
+import logging
+
 def concat_norm(sample_df, sample_type, input_dir, pattern):
     dfs = []
     for label in sample_type.split(','): 
@@ -42,9 +44,11 @@ def concat_norm(sample_df, sample_type, input_dir, pattern):
             path_to_file = path.join(filedir, filename) + pattern*(pattern not in file)
             
             if path.exists(path_to_file) == False:
-                print(path_to_file, 'does not exist\n')
+                logging.warning('{} does not exist'.format(path_to_file))
             else:
                 d = pd.read_csv(path_to_file, sep = '\t')
+                if any(i not in d.columns for i in ['dbname', 'description', 'NSAF']):
+                    logging.error('{} does not contain required columns'.format(filename))
                 d['description'] = d['description'].fillna('')
                 d['Protein'] = d['dbname'] + ' ' + d['description']
                 d.set_index(d['Protein'], inplace = True)
@@ -264,7 +268,9 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
         down_fold = np.quantile(df['log2(fold_change)'], 0.25) - 1.5*iqr(df['log2(fold_change)'])
-
+    
+    thresholds = [str(i) for i in [up_fold, down_fold, fdr_th]]
+    logging.info('Upper log2FC threshold {}, lower log2FC threshold {}, -log10FDR threshold {}'.format(*thresholds))
     df['fold_change'] = df['log2(fold_change)'].apply(lambda x: 2**x)
     if reg_type == 'UP':
         res = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] >= up_fold)]
@@ -287,18 +293,22 @@ def show_string_picture(genes, filename, species):
     }
     try:
         res = requests.post(request_url, params)
+    except urllib.error.HTTPError as exception:
+        logging.error('{} exception raised'.format(exception))
+        
+    if res:
         img_png = cairosvg.svg2png(bytestring = res.content, dpi = 600)
         img = Image.open(io.BytesIO(img_png))
-        
+
         fig, ax = plt.subplots()
         ax.imshow(img)
         ax.yaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
         ax.xaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
-        
+
         plt.savefig(filename, bbox_inches ='tight', dpi = 600)
         plt.close()
-    except urllib.error.HTTPError as exception:
-        print(exception)
+    else:
+        logging.error('Retrieving GO network failed, error {}'.format(res.status_code))
         
 def load_go_enrichment(genes,species):
     genes = genes.dropna(axis = 0)
@@ -314,7 +324,8 @@ def load_go_enrichment(genes,species):
         res = requests.post(request_url, params)
         return res
     except urllib.error.HTTPError as exception:
-        print(exception)
+        logging.error('{} exception raised'.format(exception))
+    
 
 def enrichment_calculation(genes, d, fasta_size):
     n_genes = genes.shape[0]
@@ -336,7 +347,9 @@ def QRePS(args):
 
     for sample_type in sample_groups:
         
-        print('Running {}\n'.format(sample_type))
+        logging.basicConfig(filename = path.join(args.output_dir, 'log_{}.txt'.format(sample_type)), 
+                            level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
+        logging.info('Running {}'.format(sample_type))
         
         if args.sample_file:
             sample_df = pd.read_csv(args.sample_file)
@@ -353,6 +366,7 @@ def QRePS(args):
 
         ################# NaNs block
             drop_list_proteins = nan_block(dfs, sample_type, args.output_dir)
+            logging.info('{} proteins dropped'.format(str(len(drop_list_proteins))))
             dfs = [i.drop(labels = drop_list_proteins, axis = 0) for i in dfs]
 
         ################# Imputation 
@@ -360,8 +374,14 @@ def QRePS(args):
 
         ################# Stat testing
             quant_res = stat_test(dfs, 0.01)
+            logging.info('{} proteins analyzed'.format(str(quant_res.shape[0])))
         else:
             quant_res = pd.read_csv(args.quantitation_file, sep = '\t')
+            if any(i not in quant_res.columns for i in ['log2(fold_change)', '-log10(fdr_BH)', 'Protein']):
+                logging.error('{} does not contain required columns'.format(args.quantitation_file))
+            if 'gene' in quant_res.columns:
+                logging.warning('{} contains "gene" column'.format(args.quantitation_file))
+                
             if 'Gene' not in quant_res.columns:
                 quant_res['Gene'] = quant_res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0] 
                                                           if 'GN=' in x else x.split(' ')[0])
@@ -376,36 +396,43 @@ def QRePS(args):
     ################# DE proteins selection
         genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
         if genes.shape[0] == 0:
-            print('0 proteins meet the requirements\n')
+            logging.error('0 proteins pass the thresholds')
             continue
+        else:
+            logging.info('{} differentially regulated protein(s)'.format(genes.shape[0]))
         
     ################# Metrics 
         if args.regulation == 'all':
             pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation, 
                                fold_change = args.fold_change, alpha = args.alpha)
             metric_df = pd.DataFrame(data = {'pi1' : [pi1], 'pi2' : [pi2]})
-            print('pi1 = {}\npi2 = {}'.format(pi1, pi2))
+            logging.info('pi1 {}, pi2 {}'.format(pi1, pi2))
         else:
             e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
                                         fold_change = args.fold_change, alpha = args.alpha)
             metric_df = pd.DataFrame(data = {'Euclidean distance' : [e], 
                                              'Modified euclidean distance' : [e_mod], 
                                              'pi1' : [pi1], 'pi2' : [pi2]})
-            print('Euclidean distance = {}\nModified euclidean distance = {}\npi1 = {}\npi2 = {}\n'.format(e, e_mod, pi1, pi2))
+            logging.info('Euclidean distance {}, Modified euclidean distance {}, pi1 {}, pi2 {}'.format(e, e_mod, pi1, pi2))
             
         metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
             
     ################# GO
         if genes['Gene'].count() > 0:
+            logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
             filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
-            go_res = pd.read_table(io.StringIO(response.text))
-            go_res = enrichment_calculation(genes, go_res, args.fasta_size)
-            go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
-            gos.append(go_res)
+            if response:
+                go_res = pd.read_table(io.StringIO(response.text))
+                go_res = enrichment_calculation(genes, go_res, args.fasta_size)
+                go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+                gos.append(go_res)
+            else:
+                logging.error('Retrieving GO enrichment table failed, error {}'.format(response.status_code))
+                gos.append(pd.DataFrame)
         else:
-            print('No genes available for GO enrichment analysis')
+            logging.error('No genes avalilable for GO enrichment analysis'.format(genes['Gene'].count()))
             gos.append(None)
      
         quants.append(quant_res)
