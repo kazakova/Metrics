@@ -48,22 +48,19 @@ options:
                         Path to sample file.
   --quantitation-file QUANTITATION_FILE
                         Path to quantitative analysis results file.
-  --pattern PATTERN     Input files common endpattern. Default
-                        "_protein_groups.tsv".
+  --pattern PATTERN     Input files common endpattern. Default "_protein_groups.tsv".
   --labels LABELS [LABELS ...]
                         Groups to compare.
   --input-dir INPUT_DIR
   --output-dir OUTPUT_DIR
-                        Directory to store the results. Default value is
-                        current directory.
+                        Directory to store the results. Default value is current directory.
   --imputation {kNN,MinDet}
                         Missing value imputation method.
   --thresholds {static,semi-dynamic,dynamic}
                         DE thresholds method.
   --regulation {UP,DOWN,all}
                         Target group of DE proteins.
-  --species SPECIES     NCBI species identifier. Default value 9606 (H.
-                        sapiens).
+  --species SPECIES     NCBI species identifier. Default value 9606 (H. sapiens).
   --fold-change FOLD_CHANGE
                         Fold change threshold.
   --alpha ALPHA         False discovery rate threshold.
