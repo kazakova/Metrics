@@ -345,7 +345,8 @@ def QRePS(args):
     quants = []
     gos = []
     res_metrics = []
-    logging.basicConfig(filename = path.join(args.output_dir, 'log_report.txt'), 
+    if args.report:
+        logging.basicConfig(filename = path.join(args.output_dir, 'log_report.txt'), 
                             level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
     for sample_type in sample_groups:
         
@@ -456,6 +457,7 @@ def main():
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     pars.add_argument('--fasta-size', type = float, default = 20417, help = 'Number of proteins in database for enrichment calculation')
+    pars.add_argument('--report', type = bool, default = False, help = 'Generate report.txt file, default False')
     args = pars.parse_args()
     if not args.sample_file:
         if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed with argument --quantitation-file')

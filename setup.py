@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name                 = 'QRePS',
-    version              = '1.1.0',
+    version              = '1.2.0',
     description          = '''A utility for statistical comparison of protein identification results in proteomics and calculation of quantitative metrics for total cellular response''',
     long_description     = (''.join(open('README.md').readlines())),
     long_description_content_type="text/markdown",
