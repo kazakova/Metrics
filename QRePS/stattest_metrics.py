@@ -21,7 +21,7 @@ import urllib.error
 
 import requests
 # from PIL import Image
-# import io
+import io
 import argparse
 
 import logging
