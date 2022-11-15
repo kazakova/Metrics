@@ -32,15 +32,15 @@ pip install git+https://github.com/kazakova/Metrics
 ```
 ## Usage
 ```
-qreps  [-h]
-       (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE)
-       [--pattern PATTERN] [--labels LABELS [LABELS ...]]
-       [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
-       [--imputation {kNN,MinDet}]
-       [--thresholds {static,semi-dynamic,dynamic}]
-       [--regulation {UP,DOWN,all}] [--species SPECIES]
-       [--fold-change FOLD_CHANGE] [--alpha ALPHA]
-       [--fasta-size FASTA_SIZE]
+qreps [-h]
+             (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE)
+             [--pattern PATTERN] [--labels LABELS [LABELS ...]]
+             [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
+             [--imputation {kNN,MinDet}]
+             [--thresholds {static,semi-dynamic,dynamic}]
+             [--regulation {UP,DOWN,all}] [--species SPECIES]
+             [--fold-change FOLD_CHANGE] [--alpha ALPHA]
+             [--fasta-size FASTA_SIZE] [--report REPORT]
 
 options:
   -h, --help            show this help message and exit
@@ -70,6 +70,7 @@ options:
   --fasta-size FASTA_SIZE
                         Number of proteins in database for enrichment
                         calculation
+  --report REPORT       Generate report.txt file, default False
   ```
 ### Input files
 QRePS can be used in two different ways:
@@ -102,7 +103,8 @@ QRePS produces the following files:
 2. missing value ration distribution plot (NaN_distribution.png) (*only if quantitative analysis is performed*)
 3. summary table with the results of statistical testing (Quant_res.tsv)
 4. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
-5. STRING network plot (GO_network.png) 
+5. STRING network plot (GO_network.svg)
+6. report file (report.txt *if --report True*)
 
 ## Example
 Input and output files can be found in /example
