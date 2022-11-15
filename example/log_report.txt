@@ -1,0 +1,14 @@
+INFO Running DBTRG_I,DBTRG_K
+INFO 1792 proteins dropped
+INFO 3332 proteins analyzed
+INFO Upper log2FC threshold 0.6336348704525628, lower log2FC threshold -0.5095247643368417, -log10FDR threshold 2.5108949801805514
+INFO 114 differentially regulated protein(s)
+INFO Euclidean distance 9.57497779354582, Modified euclidean distance 6.988351866082449, pi1 2660.1372095391735, pi2 127.02282548860697
+INFO 114 gene(s) available for GO enrichment analysis
+INFO Running A172_I,A172_K
+INFO 1748 proteins dropped
+INFO 4052 proteins analyzed
+INFO Upper log2FC threshold 0.43919281887856054, lower log2FC threshold -0.49025766180168423, -log10FDR threshold 1.7129142532991886
+INFO 100 differentially regulated protein(s)
+INFO Euclidean distance 6.189393688035595, Modified euclidean distance 4.422287959089018, pi1 1286.229911664442, pi2 82.68135920680736
+INFO 100 gene(s) available for GO enrichment analysis
