@@ -20,10 +20,9 @@ from matplotlib.pyplot import imread, imshow
 import urllib.error
 
 import requests
-from PIL import Image
-import io
+# from PIL import Image
+# import io
 import argparse
-import cairosvg
 
 import logging
 
@@ -297,16 +296,18 @@ def show_string_picture(genes, filename, species):
         logging.error('{} exception raised'.format(exception))
         
     if res:
-        img_png = cairosvg.svg2png(bytestring = res.content, dpi = 600)
-        img = Image.open(io.BytesIO(img_png))
+        with open(filename, 'wb') as fw:
+            fw.write(res.content)
+#         img_png = cairosvg.svg2png(bytestring = res.content, dpi = 600)
+#         img = Image.open(io.BytesIO(img_png))
 
-        fig, ax = plt.subplots()
-        ax.imshow(img)
-        ax.yaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
-        ax.xaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
+#         fig, ax = plt.subplots()
+#         ax.imshow(img)
+#         ax.yaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
+#         ax.xaxis.grid(color = 'gray', linestyle = 'dashed', linewidth = .2)
 
-        plt.savefig(filename, bbox_inches ='tight', dpi = 600)
-        plt.close()
+#         plt.savefig(filename, bbox_inches ='tight', dpi = 600)
+#         plt.close()
     else:
         logging.error('Retrieving GO network failed, error {}'.format(res.status_code))
         
@@ -344,7 +345,7 @@ def QRePS(args):
     quants = []
     gos = []
     res_metrics = []
-    logging.basicConfig(filename = path.join(args.output_dir, 'log_{}.txt'.format(sample_groups)), 
+    logging.basicConfig(filename = path.join(args.output_dir, 'log_report.txt'), 
                             level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
     for sample_type in sample_groups:
         
@@ -419,7 +420,7 @@ def QRePS(args):
     ################# GO
         if genes['Gene'].count() > 0:
             logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
-            filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type))
+            filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
             if response:
