@@ -344,11 +344,10 @@ def QRePS(args):
     quants = []
     gos = []
     res_metrics = []
-
+    logging.basicConfig(filename = path.join(args.output_dir, 'log_{}.txt'.format(sample_groups)), 
+                            level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
     for sample_type in sample_groups:
         
-        logging.basicConfig(filename = path.join(args.output_dir, 'log_{}.txt'.format(sample_type)), 
-                            level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
         logging.info('Running {}'.format(sample_type))
         
         if args.sample_file:
