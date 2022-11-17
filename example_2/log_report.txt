@@ -1,0 +1,5 @@
+INFO Running Chemprot_0.5,Chemprot_K1
+INFO Upper log2FC threshold 0.5849625007211562, lower log2FC threshold -0.5849625007211563, -log10FDR threshold 5.598383900931363
+INFO 128 differentially regulated protein(s)
+INFO pi1 1583.0731361273154, pi2 125.20790552639863
+INFO 128 gene(s) available for GO enrichment analysis
