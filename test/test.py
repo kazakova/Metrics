@@ -21,7 +21,7 @@ class QRePSResultTest(unittest.TestCase):
         true_q = [self.DBTRG_q, self.A172_q]
         true_m = [self.DBTRG_m, self.A172_m]
         datadir =  os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'example')
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'example_1')
 
         with TemporaryDirectory() as tmpdir:
             args = argparse.Namespace(sample_file=os.path.join(datadir, 'a172_dbtrg_sample.csv'), labels=['DBTRG_I,DBTRG_K','A172_I,A172_K'], input_dir=datadir, output_dir=tmpdir, imputation='kNN', thresholds='dynamic', regulation='UP', pattern = '_protein_groups.tsv', species = '9606', fold_change=2, alpha=0.01, fasta_size = 20417, report = False)
