@@ -107,27 +107,12 @@ QRePS produces the following files:
 Input and output files can be found in /example
 1. Quantiative analysis
 ```
-qreps --sample-file example/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example --output-dir example --imputation kNN --thresholds dynamic --regulation UP 
+qreps --sample-file example_1/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A172_I,A172_K --input-dir example_1 --output-dir example_1 --imputation kNN --thresholds dynamic --regulation UP 
 ```
-You will get following command line output 
-```
-Running DBTRG_I,DBTRG_K
 
-Euclidean distance = 9.574977793545823
-Modified euclidean distance = 6.9883518660824535
-pi1 = 2660.1372095391735
-pi2 = 127.02282548860697
-
-Running A172_I,A172_K
-
-Euclidean distance = 6.189393688035595
-Modified euclidean distance = 4.422287959089018
-pi1 = 1286.229911664442
-pi2 = 82.68135920680737
-
-```
 2. External quantitative analysis results
 ```
+qreps --quantitation-file example_2/ms1diffacto_out_DE_A2780_0.5_sum_each_run.txt --labels Chemprot_0.5,Chemprot_K --output-dir example_2 --thresholds semi-dynamic --fold-change 1.5 --regulation all --report True
 ```
 
 ## Extra Materials for Publication
