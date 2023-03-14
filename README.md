@@ -116,7 +116,7 @@ qreps --quantitation-file example_2/ms1diffacto_out_DE_A2780_0.5_sum_each_run.tx
 ```
 
 ## Extra Materials for Publication
-Apart from the **QRePS** tool, this repository contains additional resources referenced in the article "PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY" (PROTEOMICS, submitted):
+Apart from the **QRePS** tool, this repository contains additional resources referenced in the article ["PROTEOMICS-BASED SCORING OF CELLULAR RESPONSE TO STIMULI FOR IMPROVED CHARACTERIZATION OF SIGNALING PATHWAY ACTIVITY"](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/full/10.1002/pmic.202200275):
 
 • [Supplementary Tables](https://github.com/kazakova/Metrics/tree/main/Supplementary_materials)
 
