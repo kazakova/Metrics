@@ -53,20 +53,21 @@ def concat_norm(sample_df, sample_type, input_dir, pattern):
                 d.set_index(d['Protein'], inplace = True)
                 d.rename(columns = {'NSAF': file}, inplace = True)
                 df = pd.concat([df, d[file]], axis = 1)
-        
+    
         for col in df.columns:
             df[col] = df[col].apply(lambda x: np.log2(x))
             median = df[col].median(axis = 0, skipna  = True)
             std = df[col].std(axis = 0, skipna = True)
             df[col] = df[col].apply(lambda x: (x - median)/std) 
 
-        dfs.append(df)
+        dfs.append(df.copy())
     return dfs
 
 def nan_block(dfs, sample_type, output_dir):
     drop_list = []
     for df, label in list(zip(dfs, sample_type.split(','))):
-        df['% NaN'] = df.isna().sum(axis = 1)/len(df.columns) 
+        n_files = df.shape[1]
+        df['% NaN'] = df.isna().sum(axis = 1)/n_files 
         drop_list_prot = df[df['% NaN'] >= 0.5].index
         
         g = sns.histplot(data = df, x = '% NaN', kde = True)
@@ -396,10 +397,12 @@ def QRePS(args):
 
     ################# DE proteins selection
         genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
+        
         if genes.shape[0] == 0:
             logging.error('0 proteins pass the thresholds')
             continue
         else:
+            genes.to_csv(path.join(args.output_dir, 'DRG_{}.tsv'.format(sample_type)), sep = '\t')
             logging.info('{} differentially regulated protein(s)'.format(genes.shape[0]))
         
     ################# Metrics 
