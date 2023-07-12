@@ -70,7 +70,7 @@ def nan_block(dfs, sample_type, output_dir):
         df['% NaN'] = df.isna().sum(axis = 1)/n_files 
         drop_list_prot = df[df['% NaN'] >= 0.5].index
         
-        g = sns.histplot(data = df, x = '% NaN', kde = True)
+        g = sns.histplot(data = df, x = '% NaN', bins = n_files, binrange = (0,1))
         g.set_title('% NaN {}'.format(label))
         g.set_xticks(np.arange(0, 1, 0.1))
         g.get_figure().savefig(path.join(output_dir, 'NaN_distribution_{}.png'.format(label)), 
