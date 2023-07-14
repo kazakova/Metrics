@@ -8,6 +8,7 @@ from scipy.stats import mannwhitneyu
 from scipy.stats import ttest_ind
 
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import seaborn as sns
 sns.set(rc={'figure.facecolor':'white'})
 sns.set(style = 'whitegrid')
@@ -145,7 +146,7 @@ def stat_test(dfs, alpha):
 
 def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
-    df = df[['log2(fold_change)', '-log10(fdr_BH)']]
+#     df = df[['log2(fold_change)', '-log10(fdr_BH)']]
 
     if method == 'static':
         fdr_th = -np.log10(alpha)
@@ -156,7 +157,12 @@ def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.log2(fold_change)
         down_fold = np.log2(1/fold_change)
-
+        
+    elif method == 'ms1':
+        fdr_th = df[df['BH_pass'] == True]['-log10(fdr_BH)'].min()
+        up_fold = df[(df['FC_pass'] == True)&(df['log2(fold_change)']>0)]['log2(fold_change)'].min()
+        down_fold = df[(df['FC_pass'] == True)&(df['log2(fold_change)']<0)]['log2(fold_change)'].max()
+                                  
     else:  
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
@@ -249,8 +255,39 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
         transform  = g.ax_joint.transAxes, fontsize = 12)
     
     filename = path.join(output_dir, 'volcano_{}.png'.format(label))
-    plt.savefig(filename, dpi = 300)
+    plt.savefig(filename, dpi = 600)
     plt.close()
+    
+def volcano_ms1(d, output_dir, label): 
+       
+    up = d[(d['BH_pass']) & (d['log2(fold_change)']>0)]
+    down = d[(d['BH_pass']) & (d['log2(fold_change)']<0)]
+
+    f, ax = plt.subplots(figsize = (10/2.54, 10/2.54))
+    ax.set_xlim([-15, 15])
+    ax.set_ylim([-0.5, 15])
+    ax.xaxis.set_major_locator(plt.MaxNLocator(5))
+    ax.yaxis.set_major_locator(plt.MaxNLocator(5))
+
+    g = sns.scatterplot(x = 'log2(fold_change)', y = '-log10(fdr_BH)', data = d, label = '%s' %label,
+                       s = 20, palette = ['red', 'green'], hue = 'BH_pass', alpha = 0.8, ax = ax)
+    
+    legend_patch = mpatches.Patch(color='green', label=label)
+    plt.legend(handles=[legend_patch], loc = 'upper left', fontsize = 12)
+    
+    plt.text(x = 0.7, y = 0.7,s = 'up = {}\ndown = {}\nDE = {}'.format(up.shape[0], down.shape[0], 
+                                                                up.shape[0] + down.shape[0]), 
+        horizontalalignment = 'left', 
+        verticalalignment = 'top', 
+        transform  = ax.transAxes, fontsize = 12)
+
+    plt.xlabel('log2(fold_change)', fontsize = 12)
+    plt.ylabel('-log10(fdr_BH)', fontsize = 12)
+    ax.tick_params(axis = 'both', size = 12)
+
+    filename = path.join(output_dir, 'volcano_{}.png'.format(label))
+    plt.savefig(filename, dpi = 600, bbox_inches = 'tight')
+    plt.close() 
 
 def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
@@ -377,7 +414,20 @@ def QRePS(args):
         ################# Stat testing
             quant_res = stat_test(dfs, 0.01)
             logging.info('{} proteins analyzed'.format(str(quant_res.shape[0])))
+            
+        elif args.ms1_file:
+            quant_res = pd.read_csv(args.ms1_file, sep ='\t')
+            quant_res['BH FDR'] = statsmodels.sandbox.stats.multicomp.multipletests(quant_res['p-value'], 
+                                                                        method = 'fdr_bh', 
+                                                                        alpha = 0.05)[1]
+            quant_res['-log10(fdr_BH)'] = quant_res['BH FDR'].apply(lambda x: -np.log10(x))                  
+            quant_res = quant_res.rename(columns={'FC':'log2(fold_change)'})
+            quant_res['Gene'] = quant_res['dbname'].apply(lambda x: x.split('|')[1])
+            quant_res = quant_res.set_index('dbname')
+            quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'BH_pass', 'FC_pass']]
+                                  
         else:
+            
             quant_res = pd.read_csv(args.quantitation_file, sep = '\t')
             if any(i not in quant_res.columns for i in ['log2(fold_change)', '-log10(fdr_BH)', 'Protein']):
                 logging.error('{} does not contain required columns'.format(args.quantitation_file))
@@ -393,10 +443,22 @@ def QRePS(args):
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
 
     ################# Volcano plot
-        volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
+        if args.ms1_file:
+            volcano_ms1(quant_res, args.output_dir, sample_type)
+        else:
+            volcano(quant_res, args.output_dir, args.thresholds, sample_type, fold_change = args.fold_change, alpha = args.alpha)
 
     ################# DE proteins selection
-        genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
+        if args.ms1_file:
+            genes = quant_res[(quant_res['BH_pass'] == True)&(quant_res['FC_pass'] == True)]
+            if args.regulation == 'UP':
+                genes = genes[genes['log2(fold_change)']>0]
+            elif args.regulation == 'DOWN':
+                genes = genes[genes['log2(fold_change)']<0]
+            genes = genes[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
+            
+        else:
+            genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
         
         if genes.shape[0] == 0:
             logging.error('0 proteins pass the thresholds')
@@ -449,12 +511,13 @@ def main():
     group = pars.add_mutually_exclusive_group(required = True)
     group.add_argument('--sample-file', help = 'Path to sample file.')
     group.add_argument('--quantitation-file', help = 'Path to quantitative analysis results file.')
+    group.add_argument('--ms1-file', help = 'Path to DirectMS1Quant results file.')
     pars.add_argument('--pattern', default = '_protein_groups.tsv', help = 'Input files common endpattern. Default "_protein_groups.tsv".')
     pars.add_argument('--labels', nargs = '+', help = 'Groups to compare.')
     pars.add_argument('--input-dir')
     pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
     pars.add_argument('--imputation', choices = ['kNN', 'MinDet'], help = 'Missing value imputation method.')
-    pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic'], help = 'DE thresholds method.')
+    pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic', 'ms1'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
