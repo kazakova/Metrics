@@ -417,6 +417,7 @@ def QRePS(args):
             
         elif args.ms1_file:
             quant_res = pd.read_csv(args.ms1_file, sep ='\t')
+            quant_res['p-value'] = quant_res['score'].apply(lambda x: 10**(-x))
             quant_res['BH FDR'] = statsmodels.sandbox.stats.multicomp.multipletests(quant_res['p-value'], 
                                                                         method = 'fdr_bh', 
                                                                         alpha = 0.05)[1]
