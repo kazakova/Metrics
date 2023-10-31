@@ -1,6 +1,4 @@
 ![Logo](/QRePS_logo.png)
-# QRePS
-An open source software to quantify cellular response in proteomics.
 
 ## Overview
 **QRePS** is a tool for shotgun proteomics that performs statistical analysis on NSAF values in the results of proteome analysis. 
