@@ -1,3 +1,4 @@
+![Logo](/Logo@600x.png)
 # QRePS
 An open source software to quantify cellular response in proteomics.
 
