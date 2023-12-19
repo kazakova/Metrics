@@ -24,7 +24,7 @@ class QRePSResultTest(unittest.TestCase):
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'example_1')
 
         with TemporaryDirectory() as tmpdir:
-            args = argparse.Namespace(sample_file=os.path.join(datadir, 'a172_dbtrg_sample.csv'), labels=['DBTRG_I,DBTRG_K','A172_I,A172_K'], input_dir=datadir, output_dir=tmpdir, imputation='kNN', thresholds='dynamic', regulation='UP', pattern = '_protein_groups.tsv', species = '9606', fold_change=2, alpha=0.01, fasta_size = 20417, report = False, ms1_file = False)
+            args = argparse.Namespace(sample_file=os.path.join(datadir, 'a172_dbtrg_sample.csv'), labels=['DBTRG_I,DBTRG_K','A172_I,A172_K'], input_dir=datadir, output_dir=tmpdir, imputation='kNN', thresholds='dynamic', regulation='UP', pattern = '_protein_groups.tsv', species = '9606', fold_change=2, alpha=0.01, fasta_size = 20417, report = False, ms1_file = False, max_mv = 0.5)
             self.quants, self.gos, self.metrics = QRePS(args)
         for i in range(2):
             q = self.quants[i]
