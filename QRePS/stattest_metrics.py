@@ -64,12 +64,12 @@ def concat_norm(sample_df, sample_type, input_dir, pattern):
         dfs.append(df.copy())
     return dfs
 
-def nan_block(dfs, sample_type, output_dir):
+def nan_block(dfs, sample_type, output_dir, max_val):
     drop_list = []
     for df, label in list(zip(dfs, sample_type.split(','))):
         n_files = df.shape[1]
         df['% NaN'] = df.isna().sum(axis = 1)/n_files 
-        drop_list_prot = df[df['% NaN'] >= 0.5].index
+        drop_list_prot = df[df['% NaN'] >= max_val].index
         
         g = sns.histplot(data = df, x = '% NaN', bins = n_files, binrange = (0,1))
         g.set_title('% NaN {}'.format(label))
@@ -254,7 +254,7 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
         verticalalignment = 'top', 
         transform  = g.ax_joint.transAxes, fontsize = 12)
     
-    filename = path.join(output_dir, 'volcano_{}.png'.format(label))
+    filename = path.join(output_dir, 'volcano_{}.png'.format(label.replace(',', '_')))
     plt.savefig(filename, dpi = 600)
     plt.close()
     
@@ -269,7 +269,7 @@ def volcano_ms1(d, output_dir, label):
     ax.xaxis.set_major_locator(plt.MaxNLocator(5))
     ax.yaxis.set_major_locator(plt.MaxNLocator(5))
 
-    g = sns.scatterplot(x = 'log2(fold_change)', y = '-log10(fdr_BH)', data = d, label = '%s' %label,
+    g = sns.scatterplot(x = 'log2(fold_change)', y = '-log10(fdr_BH)', data = d,
                        s = 20, palette = ['red', 'green'], hue = 'BH_pass', alpha = 0.8, ax = ax)
     
     legend_patch = mpatches.Patch(color='green', label=label)
@@ -285,7 +285,7 @@ def volcano_ms1(d, output_dir, label):
     plt.ylabel('-log10(fdr_BH)', fontsize = 12)
     ax.tick_params(axis = 'both', size = 12)
 
-    filename = path.join(output_dir, 'volcano_{}.png'.format(label))
+    filename = path.join(output_dir, 'volcano_{}.png'.format(label.replace(',', '_')))
     plt.savefig(filename, dpi = 600, bbox_inches = 'tight')
     plt.close() 
 
@@ -398,13 +398,15 @@ def QRePS(args):
 
         ################# Adding absent proteins from another group
             ind_to_add_0 = set(dfs[1].index).difference(set(dfs[0].index))
+            new_index_0 = list(dfs[0].index) + list(ind_to_add_0)
+            dfs[0] = dfs[0].reindex(index = new_index_0)
+                
             ind_to_add_1 = set(dfs[0].index).difference(set(dfs[1].index))
-
-            dfs[0] = pd.concat([dfs[0], pd.DataFrame(index = list(ind_to_add_0), columns = dfs[0].columns)], axis = 0)
-            dfs[1] = pd.concat([dfs[1], pd.DataFrame(index = list(ind_to_add_1), columns = dfs[1].columns)], axis = 0)
+            new_index_1 = list(dfs[1].index) + list(ind_to_add_1)
+            dfs[1] = dfs[1].reindex(index = new_index_1)
 
         ################# NaNs block
-            drop_list_proteins = nan_block(dfs, sample_type, args.output_dir)
+            drop_list_proteins = nan_block(dfs, sample_type, args.output_dir, args.max_mv)
             logging.info('{} proteins dropped'.format(str(len(drop_list_proteins))))
             dfs = [i.drop(labels = drop_list_proteins, axis = 0) for i in dfs]
 
@@ -416,14 +418,17 @@ def QRePS(args):
             logging.info('{} proteins analyzed'.format(str(quant_res.shape[0])))
             
         elif args.ms1_file:
+            
             quant_res = pd.read_csv(args.ms1_file, sep ='\t')
-            quant_res['p-value'] = quant_res['score'].apply(lambda x: 10**(-x))
+            if 'p-value' not in quant_res.columns:
+                quant_res['p-value'] = quant_res['score'].apply(lambda x: 10**(-x))
             quant_res['BH FDR'] = statsmodels.sandbox.stats.multicomp.multipletests(quant_res['p-value'], 
                                                                         method = 'fdr_bh', 
                                                                         alpha = 0.05)[1]
             quant_res['-log10(fdr_BH)'] = quant_res['BH FDR'].apply(lambda x: -np.log10(x))                  
-            quant_res = quant_res.rename(columns={'FC':'log2(fold_change)'})
-            quant_res['Gene'] = quant_res['dbname'].apply(lambda x: x.split('|')[1])
+            quant_res = quant_res.rename(columns = {'log2FoldChange(S2/S1)':'log2(fold_change)',
+                                                   'FC2':'log2(fold_change)'})
+            quant_res['Gene'] = quant_res['gene']
             quant_res = quant_res.set_index('dbname')
             quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'BH_pass', 'FC_pass']]
                                   
@@ -441,7 +446,7 @@ def QRePS(args):
             quant_res = quant_res.set_index('Protein')
             quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
             
-        quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type)), sep = '\t')
+        quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t')
 
     ################# Volcano plot
         if args.ms1_file:
@@ -465,7 +470,7 @@ def QRePS(args):
             logging.error('0 proteins pass the thresholds')
             continue
         else:
-            genes.to_csv(path.join(args.output_dir, 'DRG_{}.tsv'.format(sample_type)), sep = '\t')
+            genes.to_csv(path.join(args.output_dir, 'DRG_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t')
             logging.info('{} differentially regulated protein(s)'.format(genes.shape[0]))
         
     ################# Metrics 
@@ -482,18 +487,18 @@ def QRePS(args):
                                              'pi1' : [pi1], 'pi2' : [pi2]})
             logging.info('Euclidean distance {}, Modified euclidean distance {}, pi1 {}, pi2 {}'.format(e, e_mod, pi1, pi2))
             
-        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+        metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t', index = None)
             
     ################# GO
         if genes['Gene'].count() > 0:
             logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
-            filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type))
+            filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type.replace(',', '_')))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
             if response:
                 go_res = pd.read_table(io.StringIO(response.text))
                 go_res = enrichment_calculation(genes, go_res, args.fasta_size)
-                go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type)), sep = '\t', index = None)
+                go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t', index = None)
                 gos.append(go_res)
             else:
                 logging.error('Retrieving GO enrichment table failed, error {}'.format(response.status_code))
@@ -518,16 +523,18 @@ def main():
     pars.add_argument('--input-dir')
     pars.add_argument('--output-dir', default = '.', help = 'Directory to store the results. Default value is current directory.')
     pars.add_argument('--imputation', choices = ['kNN', 'MinDet'], help = 'Missing value imputation method.')
+    pars.add_argument('--max-mv', type = float, default = 0.5, help = 'Maximum ratio of missing values.')
     pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic', 'ms1'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
-    pars.add_argument('--fasta-size', type = float, default = 20417, help = 'Number of proteins in database for enrichment calculation')
-    pars.add_argument('--report', type = bool, default = False, help = 'Generate report.txt file, default False')
+    pars.add_argument('--fasta-size', type = float, default = 20417, help = 'Number of proteins in database for enrichment calculation.')
+    pars.add_argument('--report', type = bool, default = False, help = 'Generate report.txt file, default False.')
     args = pars.parse_args()
     if not args.sample_file:
-        if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed with argument --quantitation-file')
-        elif args.input_dir: print('argument --input-dir is not allowed with argument --quantitation-file')
-        elif args.imputation: print('argument --imputation is not allowed with argument --quantitation-file')
+        if args.pattern != '_protein_groups.tsv' : print('argument --pattern is not allowed')
+        elif args.input_dir: print('argument --input-dir is not allowed')
+        elif args.imputation: print('argument --imputation is not allowed')
+        elif args.max_mv != 0.5 : print('argument --max-mv is not allowed')
     QRePS(args)
