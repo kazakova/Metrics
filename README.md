@@ -1,13 +1,14 @@
 ![Logo](/QRePS_logo.png)
 
 ## Overview
-**QRePS** is a tool for shotgun proteomics that performs statistical analysis on NSAF values in the results of proteome analysis. 
+**QRePS** is a tool for shotgun proteomics that performs statistical analysis on NSAF values in the results of proteome analysis.
 QRePS visualizes results of statistical testing with volcano plot and selects differentially regulated proteins (DRP) with different methods (listed below). 
 Based on selected features QRePS calculates set of proteomic metrics and performs GO terms enrichment analysis with the use of [STRING](https://string-db.org).
+New version of QRePS calculates proteomic metrics and performs GO analysis for [DirectMS1Quant](https://github.com/markmipt/ms1searchpy) results.
 
 ### DRP selection
 
-QRePS provides three methods to select DRP:
+QRePS proviDes three methods to select DRP:
 
 1. *static* - fold change and fdr thresholds are given by user
 2. *semi-dynamic* - fold change threshold is given by user and fdr threshold is calculated according to outliers rule: Q3 + 1.5 IQR
@@ -32,11 +33,11 @@ pip install git+https://github.com/kazakova/Metrics
 ## Usage
 ```
 qreps [-h]
-             (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE)
+             (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE | --ms1-file MS1_FILE)
              [--pattern PATTERN] [--labels LABELS [LABELS ...]]
              [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
-             [--imputation {kNN,MinDet}]
-             [--thresholds {static,semi-dynamic,dynamic}]
+             [--imputation {kNN,MinDet}] [--max-mv MAX_MV]
+             [--thresholds {static,semi-dynamic,dynamic,ms1}]
              [--regulation {UP,DOWN,all}] [--species SPECIES]
              [--fold-change FOLD_CHANGE] [--alpha ALPHA]
              [--fasta-size FASTA_SIZE] [--report REPORT]
@@ -47,7 +48,8 @@ options:
                         Path to sample file.
   --quantitation-file QUANTITATION_FILE
                         Path to quantitative analysis results file.
-  --pattern PATTERN     Input files common endpattern. Default "_protein_groups.tsv".
+  --ms1-file MS1_FILE   Path to DirectMS1Quant results file.
+  --pattern PATTERN     Input files common endpattern. Default is "_protein_groups.tsv".
   --labels LABELS [LABELS ...]
                         Groups to compare.
   --input-dir INPUT_DIR
@@ -55,32 +57,34 @@ options:
                         Directory to store the results. Default value is current directory.
   --imputation {kNN,MinDet}
                         Missing value imputation method.
-  --thresholds {static,semi-dynamic,dynamic}
+  --max-mv MAX_MV       Maximum ratio of missing values. Default value is 0.5.
+  --thresholds {static,semi-dynamic,dynamic,ms1}
                         DE thresholds method.
   --regulation {UP,DOWN,all}
                         Target group of DE proteins.
-  --species SPECIES     NCBI species identifier. Default value 9606 (H. sapiens).
+  --species SPECIES     NCBI species identifier. Default value is 9606 (H. sapiens).
   --fold-change FOLD_CHANGE
                         Fold change threshold.
   --alpha ALPHA         False discovery rate threshold.
   --fasta-size FASTA_SIZE
-                        Number of proteins in database for enrichment
-                        calculation
-  --report REPORT       Generate report.txt file, default False
+                        Number of proteins in database for enrichment calculation.
+  --report REPORT       Generate report.txt file, default False.
   ```
 ### Input files
-QRePS can be used in two different ways:
+QRePS can be used in three different ways:
 1. Perform quantitative analysis (--input-dir, --pattern, --imputation, --sample-file parameters)
-2. Use external quantitative analysis results (--quantitation-file parameter)
+2. Use external quantitative analysis results (--quantitation-file)
+3. Use results of MS1-based quantitative analysis (--ms1-file) 
 
 Input files for **quantitative analysis** should contain following columns: 
 1. 'dbname' (i.e. *sp|P14866|HNRPL_HUMAN*) 
 2. 'description' (i.e. *Heterogeneous nuclear ribonucleoprotein L OS=Homo sapiens OX=9606 GN=HNRNPL PE=1 SV=2*) 
 3. 'NSAF'
+We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files are to be taken from *--input-dir* with common endpattern *--pattern*.
 
 **Quantitation file** should contain 'log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'Protein' columns
 
-We suggest using [Scavager](https://github.com/markmipt/scavager) *protein_groups* result files. If you use something else, you should specify what files are to be taken from *--input-dir* with common endpattern *--pattern*.
+**MS1 file** should be *quant_full.tsv file from [DirectMS1Quant](https://github.com/markmipt/ms1searchpy) results.
 
 ### Sample file
 QRePS tool needs a **sample** file and at least one **data** file for each of groups to perform quantitative analysis.
@@ -98,9 +102,11 @@ QRePS produces the following files:
 1. volcano plot (volcano.png)
 2. missing value ration distribution plot (NaN_distribution.png) (*only if quantitative analysis is performed*)
 3. summary table with the results of statistical testing (Quant_res.tsv)
-4. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
-5. STRING network plot (GO_network.svg)
-6. report file (report.txt *if --report True*)
+4. summary table with differentially regulated genens (DRF.tsv)
+5. symmary table with calculated proteomic metrics (metrics.tsv)
+6. summary table with the results of GO terms enrichment analysis (GO_res.tsv)
+7. STRING network plot (GO_network.svg)
+8. report file (report.txt *if --report True*)
 
 ## Example
 Input and output files can be found in /example
@@ -112,6 +118,10 @@ qreps --sample-file example_1/a172_dbtrg_sample.csv --labels DBTRG_I,DBTRG_K A17
 2. External quantitative analysis results
 ```
 qreps --quantitation-file example_2/ms1diffacto_out_DE_A2780_0.5_sum_each_run.txt --labels Chemprot_0.5,Chemprot_K --output-dir example_2 --thresholds semi-dynamic --fold-change 1.5 --regulation all --report True
+```
+3. DirectMS1Quant resuls analysis
+```
+qreps --ms1-file ms1quant_out_DE_A2780_5_DE_A2780_K1_quant_full.tsv --labels Chemprot_0.5,Chemprot_K --output-dir output --thresholds ms1 --regulation all --report True
 ```
 
 ## Extra Materials for Publication
