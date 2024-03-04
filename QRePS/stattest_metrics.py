@@ -1,10 +1,9 @@
-from os import path, listdir, mkdir
+from os import path
 import numpy as np
 import pandas as pd
 
 import statsmodels.sandbox.stats.multicomp
 from scipy.stats import norm
-from scipy.stats import mannwhitneyu
 from scipy.stats import ttest_ind
 
 import matplotlib.pyplot as plt
@@ -14,73 +13,73 @@ sns.set(rc={'figure.facecolor':'white'})
 sns.set(style = 'whitegrid')
 
 from sklearn.impute import KNNImputer
-
 from scipy.stats import iqr
-
-from matplotlib.pyplot import imread, imshow
 import urllib.error
-
 import requests
-# from PIL import Image
 import io
 import argparse
 
 import logging
 
+logger = logging.getLogger(__name__)
+
+
 def concat_norm(sample_df, sample_type, input_dir, pattern):
     dfs = []
-    for label in sample_type.split(','): 
+    for label in sample_type.split(','):
         df = pd.DataFrame()
         files = sample_df[sample_df['SampleID' ] == label]
-        
+
         for file in files['File Name']:
-            
+
             filedir = path.split(file)[0]
             filename = path.split(file)[1]
-            
+
             if input_dir:
                 filedir = input_dir
-            
+
             path_to_file = path.join(filedir, filename) + pattern*(pattern not in file)
-            
+
             if path.exists(path_to_file) == False:
-                logging.warning('{} does not exist'.format(path_to_file))
+                logger.warning('%s does not exist', path_to_file)
             else:
                 d = pd.read_csv(path_to_file, sep = '\t')
                 if any(i not in d.columns for i in ['dbname', 'description', 'NSAF']):
-                    logging.error('{} does not contain required columns'.format(filename))
+                    logger.error('%s does not contain required columns', filename)
                 d['description'] = d['description'].fillna('')
                 d['Protein'] = d['dbname'] + ' ' + d['description']
                 d.set_index(d['Protein'], inplace = True)
                 d.rename(columns = {'NSAF': file}, inplace = True)
                 df = pd.concat([df, d[file]], axis = 1)
-    
+
         for col in df.columns:
             df[col] = df[col].apply(lambda x: np.log2(x))
             median = df[col].median(axis = 0, skipna  = True)
             std = df[col].std(axis = 0, skipna = True)
-            df[col] = df[col].apply(lambda x: (x - median)/std) 
+            df[col] = df[col].apply(lambda x: (x - median)/std)
 
         dfs.append(df.copy())
     return dfs
+
 
 def nan_block(dfs, sample_type, output_dir, max_val):
     drop_list = []
     for df, label in list(zip(dfs, sample_type.split(','))):
         n_files = df.shape[1]
-        df['% NaN'] = df.isna().sum(axis = 1)/n_files 
+        df['% NaN'] = df.isna().sum(axis = 1)/n_files
         drop_list_prot = df[df['% NaN'] >= max_val].index
-        
+
         g = sns.histplot(data = df, x = '% NaN', bins = n_files, binrange = (0,1))
         g.set_title('% NaN {}'.format(label))
         g.set_xticks(np.arange(0, 1, 0.1))
-        g.get_figure().savefig(path.join(output_dir, 'NaN_distribution_{}.png'.format(label)), 
+        g.get_figure().savefig(path.join(output_dir, 'NaN_distribution_{}.png'.format(label)),
                                dpi = 300, format = 'png')
         plt.close()
         drop_list.append(drop_list_prot)
-        
+
     drop_list_proteins = drop_list[0].intersection(drop_list[1])
-    return drop_list_proteins  
+    return drop_list_proteins
+
 
 def imputation(dfs, method):
     if method == 'kNN':
@@ -91,58 +90,61 @@ def imputation(dfs, method):
             df = df[df.columns[:-1]]
             res.append(df.fillna(df.min(axis = 0), axis = 0).sort_index())
         return res
-    
+
+
 def imputation_kNN(dfs):
     res = []
     for df in dfs:
         imputer = KNNImputer(n_neighbors=5, weights='uniform', metric='nan_euclidean')
         cols = list(df.columns)[0:-1]
-        
+
         df_0 = df[df['% NaN'] == 0.0]
         df_imput = df[(df['% NaN'] > 0) & (df['% NaN'] < 1)]
         df_norm = df[df['% NaN'] == 1]
-        
+
         mean_min = np.mean(df[cols].min(axis = 0))
         std_min = np.std(df[cols].min(axis = 0))
-        
+
         df_0 = df_0.drop(labels = ['% NaN'], axis = 1)
         df_imput = df_imput.drop(labels = ['% NaN'], axis = 1)
         df_norm = df_norm.drop(labels = ['% NaN'], axis = 1)
-        
+
         ####
         for row in df_norm.index:
             df_norm.loc[row] = norm.rvs(loc = mean_min, scale = std_min, size = len(cols), random_state=1)
-        
+
         ###
         imputer.fit(df_0)
         ind = df_imput.index
-        
+
         df_imputed = pd.DataFrame(imputer.transform(df_imput))
         df_imputed.columns = cols
         df_imputed.index = ind
-        
+
         df = pd.concat([df_0, df_imputed, df_norm], axis = 0).sort_index()
         res.append(df)
-    return res    
+    return res
+
 
 def stat_test(dfs, alpha):
     s1 = dfs[0].values.tolist()
     s2 = dfs[1].values.tolist()
-    
+
     pval = pd.Series(data = [ttest_ind(row1, row2)[1] for row1, row2 in zip(s1, s2)], index = dfs[0].index)
     res = pd.merge(dfs[0], dfs[1], left_index=True, right_index=True)
     res['pval'] = pval
     res = res.dropna(axis = 0, subset = ['pval'])
 
-    res['fdr_BH'] = statsmodels.sandbox.stats.multicomp.multipletests(res['pval'], 
+    res['fdr_BH'] = statsmodels.sandbox.stats.multicomp.multipletests(res['pval'],
                                                                      method = 'fdr_bh', alpha = alpha)[1]
     res['Protein'] = res.index
-    res['Gene'] = res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0] 
+    res['Gene'] = res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0]
                                                           if 'GN=' in x else x.split(' ')[0])
     res.drop(labels = ['Protein'], axis = 1, inplace = True)
     res['-log10(fdr_BH)'] = res['fdr_BH'].apply(lambda x: -np.log10(x))
     res['log2(fold_change)'] = dfs[0].mean(axis = 1) - dfs[1].mean(axis = 1)
     return res[['-log10(fdr_BH)', 'log2(fold_change)', 'Gene']]
+
 
 def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
@@ -157,13 +159,13 @@ def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.log2(fold_change)
         down_fold = np.log2(1/fold_change)
-        
+
     elif method == 'ms1':
         fdr_th = df[df['BH_pass'] == True]['-log10(fdr_BH)'].min()
         up_fold = df[(df['FC_pass'] == True)&(df['log2(fold_change)']>0)]['log2(fold_change)'].min()
         down_fold = df[(df['FC_pass'] == True)&(df['log2(fold_change)']<0)]['log2(fold_change)'].max()
-                                  
-    else:  
+
+    else:
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
         down_fold = np.quantile(df['log2(fold_change)'], 0.25) - 1.5*iqr(df['log2(fold_change)'])
@@ -191,7 +193,7 @@ def metrics(df, method, reg_type, fold_change = 2, alpha = 0.01):
         return e_dist, e_dist_mod, pi1, pi2
 
 
-def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):   
+def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
 
     b = np.quantile(d['-log10(fdr_BH)'], 0.75) + 1.5*iqr(d['-log10(fdr_BH)'])
     dyn = 10**(-b)
@@ -202,7 +204,7 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
         down_fold = np.quantile(d['log2(fold_change)'], 0.25) - 1.5*iqr(d['log2(fold_change)'])
 #         print(round(up_fold, 3), round(down_fold, 3))
         add_name = '_dynamic'
-    elif method == 'semi-dynamic': 
+    elif method == 'semi-dynamic':
         fdr_th = b
         up_fold = np.log2(fold_change)
         down_fold = np.log2(1/fold_change)
@@ -221,25 +223,25 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
     #диаграмма рассеяния
 
     y_lim = np.max(d['-log10(fdr_BH)']) + 5
-    g = sns.JointGrid(x = 'log2(fold_change)', y = '-log10(fdr_BH)', 
+    g = sns.JointGrid(x = 'log2(fold_change)', y = '-log10(fdr_BH)',
                       data = d, ylim = (-0.25, y_lim), height = 8)
 
-    g.plot_joint(sns.scatterplot, color = 'green', s = 10, label = '%s' %label)     
+    g.plot_joint(sns.scatterplot, color = 'green', s = 10, label = '%s' %label)
 
     #вертикальные пороги
-    g.ax_joint.plot([up_fold]*len(np.arange(-0.1, y_lim, 0.1)), np.arange(-0.1, y_lim, 0.1), color = "grey", 
+    g.ax_joint.plot([up_fold]*len(np.arange(-0.1, y_lim, 0.1)), np.arange(-0.1, y_lim, 0.1), color = "grey",
                     label = 'f_c up = %.3f' % 2**(up_fold))
-    g.ax_joint.plot([down_fold]*len(np.arange(-0.1, y_lim, 0.1)), np.arange(-0.1, y_lim, 0.1), color = "grey", 
+    g.ax_joint.plot([down_fold]*len(np.arange(-0.1, y_lim, 0.1)), np.arange(-0.1, y_lim, 0.1), color = "grey",
                     label = 'f_c down = %.3f' % 2**(down_fold))
     #boxplot
     g.plot_marginals(sns.boxplot, linewidth = 0.5, fliersize = 3)
-    
+
     #горизонтальная линия с оптимизированным порогом
     g.ax_joint.plot(d['log2(fold_change)'], [b]*len(d['log2(fold_change)']), color = "black", linestyle = ':',
         label = 'fdr = ' + f'{dyn:.2e}')
 
     #горизонтальная линия с alpha = 0.05 (default)
-    g.ax_joint.plot(d['log2(fold_change)'], [-np.log10(alpha)]*len(d['log2(fold_change)']), color = "red", 
+    g.ax_joint.plot(d['log2(fold_change)'], [-np.log10(alpha)]*len(d['log2(fold_change)']), color = "red",
                      linestyle = ':', label = 'fdr = %g' % alpha)
 
     g.ax_joint.set_xlabel('log2(fold_change)', fontsize = 12)
@@ -248,18 +250,19 @@ def volcano(d, output_dir, method, label, alpha = 0.01, fold_change = 2):
 
     legendMain = g.ax_joint.legend(loc = 'upper left', fontsize = 12)
 
-    plt.text(x = 0.7, y = 0.9,s = 'up = {}\ndown = {}\nDE = {}'.format(up.shape[0], down.shape[0], 
-                                                                    up.shape[0] + down.shape[0]), 
-        horizontalalignment = 'left', 
-        verticalalignment = 'top', 
+    plt.text(x = 0.7, y = 0.9,s = 'up = {}\ndown = {}\nDE = {}'.format(up.shape[0], down.shape[0],
+                                                                    up.shape[0] + down.shape[0]),
+        horizontalalignment = 'left',
+        verticalalignment = 'top',
         transform  = g.ax_joint.transAxes, fontsize = 12)
-    
+
     filename = path.join(output_dir, 'volcano_{}.png'.format(label.replace(',', '_')))
     plt.savefig(filename, dpi = 600)
     plt.close()
-    
-def volcano_ms1(d, output_dir, label): 
-       
+
+
+def volcano_ms1(d, output_dir, label):
+
     up = d[(d['BH_pass']) & (d['log2(fold_change)']>0)]
     down = d[(d['BH_pass']) & (d['log2(fold_change)']<0)]
 
@@ -271,14 +274,14 @@ def volcano_ms1(d, output_dir, label):
 
     g = sns.scatterplot(x = 'log2(fold_change)', y = '-log10(fdr_BH)', data = d,
                        s = 20, palette = ['red', 'green'], hue = 'BH_pass', alpha = 0.8, ax = ax)
-    
+
     legend_patch = mpatches.Patch(color='green', label=label)
     plt.legend(handles=[legend_patch], loc = 'upper left', fontsize = 12)
-    
-    plt.text(x = 0.7, y = 0.7,s = 'up = {}\ndown = {}\nDE = {}'.format(up.shape[0], down.shape[0], 
-                                                                up.shape[0] + down.shape[0]), 
-        horizontalalignment = 'left', 
-        verticalalignment = 'top', 
+
+    plt.text(x = 0.7, y = 0.7,s = 'up = {}\ndown = {}\nDE = {}'.format(up.shape[0], down.shape[0],
+                                                                up.shape[0] + down.shape[0]),
+        horizontalalignment = 'left',
+        verticalalignment = 'top',
         transform  = ax.transAxes, fontsize = 12)
 
     plt.xlabel('log2(fold_change)', fontsize = 12)
@@ -287,7 +290,8 @@ def volcano_ms1(d, output_dir, label):
 
     filename = path.join(output_dir, 'volcano_{}.png'.format(label.replace(',', '_')))
     plt.savefig(filename, dpi = 600, bbox_inches = 'tight')
-    plt.close() 
+    plt.close()
+
 
 def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
 
@@ -301,13 +305,13 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
         up_fold = np.log2(fold_change)
         down_fold = np.log2(1/fold_change)
 
-    else:  
+    else:
         fdr_th = np.quantile(df['-log10(fdr_BH)'], 0.75) + 1.5*iqr(df['-log10(fdr_BH)'])
         up_fold = np.quantile(df['log2(fold_change)'], 0.75) + 1.5*iqr(df['log2(fold_change)'])
         down_fold = np.quantile(df['log2(fold_change)'], 0.25) - 1.5*iqr(df['log2(fold_change)'])
-    
+
     thresholds = [str(i) for i in [up_fold, down_fold, fdr_th]]
-    logging.info('Upper log2FC threshold {}, lower log2FC threshold {}, -log10FDR threshold {}'.format(*thresholds))
+    logger.info('Upper log2FC threshold %s, lower log2FC threshold %s, -log10FDR threshold %s', *thresholds)
     df['fold_change'] = df['log2(fold_change)'].apply(lambda x: 2**x)
     if reg_type == 'UP':
         res = df[(df['-log10(fdr_BH)'] > fdr_th) & (df['log2(fold_change)'] >= up_fold)]
@@ -318,6 +322,7 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
                                                 ) ]
     return res[['fold_change', '-log10(fdr_BH)', 'Gene']]
 
+
 def show_string_picture(genes, filename, species):
     genes = genes.dropna(axis = 0)
     string_api_url = "https://string-db.org/api/"
@@ -326,13 +331,13 @@ def show_string_picture(genes, filename, species):
     request_url = string_api_url + output_format + "/" + method
     params = {
     "identifiers" : "%0d".join(genes.values), # your protein
-    "species" : species, # species NCBI identifier 
+    "species" : species, # species NCBI identifier
     }
     try:
         res = requests.post(request_url, params)
     except urllib.error.HTTPError as exception:
-        logging.error('{} exception raised'.format(exception))
-        
+        logger.error('%s exception raised', exception)
+
     if res:
         with open(filename, 'wb') as fw:
             fw.write(res.content)
@@ -347,8 +352,9 @@ def show_string_picture(genes, filename, species):
 #         plt.savefig(filename, bbox_inches ='tight', dpi = 600)
 #         plt.close()
     else:
-        logging.error('Retrieving GO network failed, error {}'.format(res.status_code))
-        
+        logger.error('Retrieving GO network failed, error %s', res.status_code)
+
+
 def load_go_enrichment(genes,species):
     genes = genes.dropna(axis = 0)
     string_api_url = "https://string-db.org/api/"
@@ -357,14 +363,14 @@ def load_go_enrichment(genes,species):
     request_url = string_api_url + output_format + "/" + method
     params = {
     "identifiers" : "%0d".join(genes.values), # your protein
-    "species" : species, # species NCBI identifier 
+    "species" : species, # species NCBI identifier
     }
     try:
         res = requests.post(request_url, params)
         return res
     except urllib.error.HTTPError as exception:
-        logging.error('{} exception raised'.format(exception))
-    
+        logger.error('%s exception raised', exception)
+
 
 def enrichment_calculation(genes, d, fasta_size):
     n_genes = genes.shape[0]
@@ -374,25 +380,26 @@ def enrichment_calculation(genes, d, fasta_size):
     d['GO_score'] = d['-log10(fdr)'] * d['Enrichment']
 
     return d
-        
-def QRePS(args):    
+
+
+def QRePS(args):
     #################
-    
+
     sample_groups = args.labels
-    
+
     quants = []
     gos = []
     res_metrics = []
     if args.report:
-        logging.basicConfig(filename = path.join(args.output_dir, 'report.txt'), 
+        logging.basicConfig(filename = path.join(args.output_dir, 'report.txt'),
                             level = logging.INFO, filemode = 'w', format = "%(levelname)s %(message)s")
     for sample_type in sample_groups:
-        
-        logging.info('Running {}'.format(sample_type))
-        
+
+        logger.info('Running %s', sample_type)
+
         if args.sample_file:
             sample_df = pd.read_csv(args.sample_file)
-        
+
         ################# Table concatenation and normalization
             dfs = concat_norm(sample_df, sample_type, args.input_dir, args.pattern)
 
@@ -400,52 +407,52 @@ def QRePS(args):
             ind_to_add_0 = set(dfs[1].index).difference(set(dfs[0].index))
             new_index_0 = list(dfs[0].index) + list(ind_to_add_0)
             dfs[0] = dfs[0].reindex(index = new_index_0)
-                
+
             ind_to_add_1 = set(dfs[0].index).difference(set(dfs[1].index))
             new_index_1 = list(dfs[1].index) + list(ind_to_add_1)
             dfs[1] = dfs[1].reindex(index = new_index_1)
 
         ################# NaNs block
             drop_list_proteins = nan_block(dfs, sample_type, args.output_dir, args.max_mv)
-            logging.info('{} proteins dropped'.format(str(len(drop_list_proteins))))
+            logger.info('%d proteins dropped', len(drop_list_proteins))
             dfs = [i.drop(labels = drop_list_proteins, axis = 0) for i in dfs]
 
-        ################# Imputation 
+        ################# Imputation
             dfs = imputation(dfs, args.imputation)
 
         ################# Stat testing
             quant_res = stat_test(dfs, 0.01)
-            logging.info('{} proteins analyzed'.format(str(quant_res.shape[0])))
-            
+            logger.info('%d proteins analyzed', quant_res.shape[0])
+
         elif args.ms1_file:
-            
+
             quant_res = pd.read_csv(args.ms1_file, sep ='\t')
             if 'p-value' not in quant_res.columns:
                 quant_res['p-value'] = quant_res['score'].apply(lambda x: 10**(-x))
-            quant_res['BH FDR'] = statsmodels.sandbox.stats.multicomp.multipletests(quant_res['p-value'], 
-                                                                        method = 'fdr_bh', 
+            quant_res['BH FDR'] = statsmodels.sandbox.stats.multicomp.multipletests(quant_res['p-value'],
+                                                                        method = 'fdr_bh',
                                                                         alpha = 0.05)[1]
-            quant_res['-log10(fdr_BH)'] = quant_res['BH FDR'].apply(lambda x: -np.log10(x))                  
+            quant_res['-log10(fdr_BH)'] = quant_res['BH FDR'].apply(lambda x: -np.log10(x))
             quant_res = quant_res.rename(columns = {'log2FoldChange(S2/S1)':'log2(fold_change)',
                                                    'FC2':'log2(fold_change)'})
             quant_res['Gene'] = quant_res['gene']
             quant_res = quant_res.set_index('dbname')
             quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene', 'BH_pass', 'FC_pass']]
-                                  
+
         else:
-            
+
             quant_res = pd.read_csv(args.quantitation_file, sep = '\t')
             if any(i not in quant_res.columns for i in ['log2(fold_change)', '-log10(fdr_BH)', 'Protein']):
-                logging.error('{} does not contain required columns'.format(args.quantitation_file))
+                logger.error('%s does not contain required columns', args.quantitation_file)
             if 'gene' in quant_res.columns:
-                logging.warning('{} contains "gene" column'.format(args.quantitation_file))
-                
+                logger.warning('%s contains "gene" column', args.quantitation_file)
+
             if 'Gene' not in quant_res.columns:
-                quant_res['Gene'] = quant_res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0] 
+                quant_res['Gene'] = quant_res.Protein.astype(str).apply(lambda x: x.split('GN=')[1].split(' ')[0]
                                                           if 'GN=' in x else x.split(' ')[0])
             quant_res = quant_res.set_index('Protein')
             quant_res = quant_res[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
-            
+
         quant_res.to_csv(path.join(args.output_dir, 'Quant_res_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t')
 
     ################# Volcano plot
@@ -462,36 +469,36 @@ def QRePS(args):
             elif args.regulation == 'DOWN':
                 genes = genes[genes['log2(fold_change)']<0]
             genes = genes[['log2(fold_change)', '-log10(fdr_BH)', 'Gene']]
-            
+
         else:
             genes = de_gene_list(quant_res, args.thresholds, args.regulation, fold_change = args.fold_change, alpha = args.alpha)
-        
+
         if genes.shape[0] == 0:
-            logging.error('0 proteins pass the thresholds')
+            logger.error('0 proteins pass the thresholds')
             continue
         else:
             genes.to_csv(path.join(args.output_dir, 'DRG_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t')
-            logging.info('{} differentially regulated protein(s)'.format(genes.shape[0]))
-        
-    ################# Metrics 
+            logger.info('%d differentially regulated protein(s)', genes.shape[0])
+
+    ################# Metrics
         if args.regulation == 'all':
-            pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation, 
+            pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
                                fold_change = args.fold_change, alpha = args.alpha)
             metric_df = pd.DataFrame(data = {'pi1' : [pi1], 'pi2' : [pi2]})
-            logging.info('pi1 {}, pi2 {}'.format(pi1, pi2))
+            logger.info('pi1 %s, pi2 %s', pi1, pi2)
         else:
             e, e_mod, pi1, pi2 = metrics(quant_res, method = args.thresholds, reg_type = args.regulation,
                                         fold_change = args.fold_change, alpha = args.alpha)
-            metric_df = pd.DataFrame(data = {'Euclidean distance' : [e], 
-                                             'Modified euclidean distance' : [e_mod], 
+            metric_df = pd.DataFrame(data = {'Euclidean distance' : [e],
+                                             'Modified euclidean distance' : [e_mod],
                                              'pi1' : [pi1], 'pi2' : [pi2]})
-            logging.info('Euclidean distance {}, Modified euclidean distance {}, pi1 {}, pi2 {}'.format(e, e_mod, pi1, pi2))
-            
+            logger.info('Euclidean distance %s, Modified euclidean distance %s, pi1 %s, pi2 %s', e, e_mod, pi1, pi2)
+
         metric_df.to_csv(path.join(args.output_dir, 'metrics_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t', index = None)
-            
+
     ################# GO
         if genes['Gene'].count() > 0:
-            logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
+            logger.info('%d gene(s) available for GO enrichment analysis', genes['Gene'].count())
             filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type.replace(',', '_')))
             show_string_picture(genes['Gene'], filename, args.species)
             response = load_go_enrichment(genes['Gene'], args.species)
@@ -501,15 +508,16 @@ def QRePS(args):
                 go_res.to_csv(path.join(args.output_dir, 'GO_res_{}.tsv'.format(sample_type.replace(',', '_'))), sep = '\t', index = None)
                 gos.append(go_res)
             else:
-                logging.error('Retrieving GO enrichment table failed, error {}'.format(response.status_code))
+                logger.error('Retrieving GO enrichment table failed, error %s', response.status_code)
                 gos.append(pd.DataFrame)
         else:
-            logging.error('No genes avalilable for GO enrichment analysis'.format(genes['Gene'].count()))
+            logger.error('No genes avalilable for GO enrichment analysis')
             gos.append(None)
-     
+
         quants.append(quant_res)
         res_metrics.append(metric_df)
     return quants, gos, res_metrics
+
 
 def main():
     ################# params
