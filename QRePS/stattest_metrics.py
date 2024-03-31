@@ -318,10 +318,9 @@ def de_gene_list(df, method, reg_type, fold_change = 2, alpha = 0.01):
                                                 ) ]
     return res[['fold_change', '-log10(fdr_BH)', 'Gene']]
 
-def show_string_picture(genes, filename, species):
+def show_string_picture(genes, filename, species, output_format="svg"):
     genes = genes.dropna(axis = 0)
     string_api_url = "https://string-db.org/api/"
-    output_format = "svg"
     method = "network"
     request_url = string_api_url + output_format + "/" + method
     params = {
@@ -492,8 +491,12 @@ def QRePS(args):
     ################# GO
         if genes['Gene'].count() > 0:
             logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
-            filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type.replace(',', '_')))
-            show_string_picture(genes['Gene'], filename, args.species)
+            if args.goplot_format in ('both', 'svg'):
+                filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type.replace(',', '_')))
+                show_string_picture(genes['Gene'], filename, args.species, 'svg')
+            if args.goplot_format in ('both', 'png'):
+                filename = path.join(args.output_dir, 'GO_network_{}.png'.format(sample_type.replace(',', '_')))
+                show_string_picture(genes['Gene'], filename, args.species, 'highres_image')
             response = load_go_enrichment(genes['Gene'], args.species)
             if response:
                 go_res = pd.read_table(io.StringIO(response.text))
@@ -527,6 +530,7 @@ def main():
     pars.add_argument('--thresholds', choices = ['static', 'semi-dynamic', 'dynamic', 'ms1'], help = 'DE thresholds method.')
     pars.add_argument('--regulation', choices = ['UP', 'DOWN', 'all'], help = 'Target group of DE proteins.')
     pars.add_argument('--species', default = '9606', help = 'NCBI species identifier. Default value 9606 (H. sapiens).')
+    pars.add_argument('--goplot-format', default = 'svg', help = 'GO plot output format. Options: "svg", "png", "both", "none". Default: "svg"')
     pars.add_argument('--fold-change', type = float, default = 2, help = 'Fold change threshold.')
     pars.add_argument('--alpha', type = float, default = 0.01, help = 'False discovery rate threshold.')
     pars.add_argument('--fasta-size', type = float, default = 20417, help = 'Number of proteins in database for enrichment calculation.')
