@@ -32,15 +32,15 @@ pip install git+https://github.com/kazakova/Metrics
 ```
 ## Usage
 ```
-qreps [-h]
+usage: qreps [-h]
              (--sample-file SAMPLE_FILE | --quantitation-file QUANTITATION_FILE | --ms1-file MS1_FILE)
              [--pattern PATTERN] [--labels LABELS [LABELS ...]]
              [--input-dir INPUT_DIR] [--output-dir OUTPUT_DIR]
              [--imputation {kNN,MinDet}] [--max-mv MAX_MV]
              [--thresholds {static,semi-dynamic,dynamic,ms1}]
              [--regulation {UP,DOWN,all}] [--species SPECIES]
-             [--fold-change FOLD_CHANGE] [--alpha ALPHA]
-             [--fasta-size FASTA_SIZE] [--report REPORT]
+             [--goplot-format GOPLOT_FORMAT] [--fold-change FOLD_CHANGE]
+             [--alpha ALPHA] [--fasta-size FASTA_SIZE] [--report REPORT]
 
 options:
   -h, --help            show this help message and exit
@@ -57,12 +57,15 @@ options:
                         Directory to store the results. Default value is current directory.
   --imputation {kNN,MinDet}
                         Missing value imputation method.
-  --max-mv MAX_MV       Maximum ratio of missing values. Default value is 0.5.
+  --max-mv MAX_MV       Maximum ratio of missing values.
   --thresholds {static,semi-dynamic,dynamic,ms1}
                         DE thresholds method.
   --regulation {UP,DOWN,all}
                         Target group of DE proteins.
   --species SPECIES     NCBI species identifier. Default value is 9606 (H. sapiens).
+  --goplot-format GOPLOT_FORMAT
+                        GO plot output format. Options: "svg", "png", "both",
+                        "none". Default: "svg"
   --fold-change FOLD_CHANGE
                         Fold change threshold.
   --alpha ALPHA         False discovery rate threshold.
