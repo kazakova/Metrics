@@ -496,7 +496,7 @@ def QRePS(args):
 
     ################# GO
         if genes['Gene'].count() > 0:
-            logging.info('{} gene(s) available for GO enrichment analysis'.format(genes['Gene'].count()))
+            logging.info('%s gene(s) available for GO enrichment analysis', genes['Gene'].count())
             if args.goplot_format in ('both', 'svg'):
                 filename = path.join(args.output_dir, 'GO_network_{}.svg'.format(sample_type.replace(',', '_')))
                 show_string_picture(genes['Gene'], filename, args.species, 'svg')
